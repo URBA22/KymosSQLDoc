@@ -1,0 +1,33 @@
+{
+    "root": true,
+    "parser": "@typescript-eslint/parser",
+    "plugins": [
+        "@typescript-eslint"
+    ],
+    "extends": [
+        "eslint:recommended",
+        "plugin:@typescript-eslint/eslint-recommended",
+        "plugin:@typescript-eslint/recommended"
+    ],
+    "rules": {
+        "no-empty-function": "off",
+        "@typescript-eslint/no-empty-function": "off",
+        "@typescript-eslint/no-namespace": "off",
+        "quotes": [
+            "error",
+            "single"
+        ],
+        "semi": [
+            "error",
+            "always"
+        ],
+        "indent": [
+            "warn",
+            4
+        ],
+        "max-depth": [
+            "error",
+            2
+        ]
+    }
+}

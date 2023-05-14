@@ -1,11 +1,17 @@
+import { IFsManager } from '@core';
+
 export interface IParser {
-    parse(definition: string): Promise<string>;
+    parseAsync(definition: string): Promise<string>;
 }
 
 export class Parser implements IParser {
+    private fsManager: IFsManager;
 
-    public async parse(definition: string) {
+    constructor(fsManager: IFsManager) {
+        this.fsManager = fsManager;
+    }
 
+    public async parseAsync(definition: string) {
         return definition;
     }
 }

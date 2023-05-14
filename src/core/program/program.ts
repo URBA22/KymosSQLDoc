@@ -2,7 +2,7 @@ import { ICommand } from '@core';
 import { IParser } from '@services';
 
 export interface IProgram {
-    execute(argv: string[]): Promise<void>;
+    executeAsync(argv: string[]): Promise<void>;
 }
 
 export class Program implements IProgram {
@@ -14,7 +14,7 @@ export class Program implements IProgram {
         this.parser = parser;
     }
 
-    public async execute(argv: string[]): Promise<void> {
+    public async executeAsync(argv: string[]): Promise<void> {
         const programOptions = await this.command.parseAsync(argv);
 
         console.log(programOptions);

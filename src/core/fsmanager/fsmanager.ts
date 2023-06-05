@@ -6,6 +6,7 @@ export interface IFsManager {
     readDirectoryAsync(path: string): Promise<void>;
     writeDirectoryAsync(path: string): Promise<void>;
 }
+const fs = require('fs');
 
 export class FsManager implements IFsManager {
 
@@ -15,18 +16,26 @@ export class FsManager implements IFsManager {
         this.absolutePath = absolutePath ?? '';
     }
 
-    readDirectoryAsync(path: string): Promise<void> {
-        throw new Error('Method not implemented.');
+    async readDirectoryAsync(path: string): Promise<void> {
+        //non sono sicuro funzioni e non so se è giusto il Promise<void> essendo un read(penso dovesse restituire una stringa)
+        fs.readdirSync(path);
+
     }
-    writeDirectoryAsync(path: string): Promise<void> {
-        throw new Error('Method not implemented.');
+    async writeDirectoryAsync(path: string): Promise<void> {
+        //non sono sicuro funzioni
+        if (!fs.existsSync(path)) {
+            fs.mkdirSync(path);
+        }
     }
 
-    readFileAsync(path: string): Promise<string> {
-        throw new Error('Method not implemented.');
+    async readFileAsync(path: string): Promise<string> {
+        //funziona
+        const contenuto: string = fs.readFileSync(path, 'utf8');
+        return contenuto;
     }
-    writeFileAsync(path: string): Promise<void> {
-        throw new Error('Method not implemented.');
+    async writeFileAsync(path: string): Promise<void> {
+        //non sono sicuro funzioni mancherebbe l'input dell'utente
+        fs.writeFile(path, 'prova file');
     }
 
 }

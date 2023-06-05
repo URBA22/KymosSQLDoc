@@ -1,4 +1,4 @@
-import { ArgumentNullError, ArgumentNullOrEmptyError } from '@services/guardClauses/errors';
+import { ArgumentNullError, ArgumentNullOrEmptyError } from './errors';
 
 export namespace Guard {
     export class Against {

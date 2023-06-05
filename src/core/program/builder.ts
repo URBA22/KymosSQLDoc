@@ -1,6 +1,6 @@
-import { ICommand } from '@core';
-import { IProgram, Program } from '@core/program/program';
-import { Guard, IParser } from '@services';
+import { ICommand } from '../command';
+import { IProgram, Program } from './program';
+import { Guard, IParser } from '../../services';
 
 interface IProgramBuilder_Step0 {
     withCommand(command: ICommand): IProgramBuilder_Step1

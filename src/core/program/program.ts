@@ -1,5 +1,5 @@
-import { ICommand } from '@core';
-import { IParser } from '@services';
+import { ICommand } from '../command';
+import { IParser } from 'src/services';
 
 export interface IProgram {
     executeAsync(argv: string[]): Promise<void>;

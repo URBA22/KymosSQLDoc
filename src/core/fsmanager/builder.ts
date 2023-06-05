@@ -1,5 +1,5 @@
-import { IFsManager } from '@core';
-import { FsManager } from '@core/fsmanager/fsmanager';
+import { IFsManager } from '../fsmanager';
+import { FsManager } from './fsmanager';
 
 interface IFsManagerBuilder_Step0 {
     withAbsolutePath(absolutePath: string): IFsManagerBuilder_Step1;

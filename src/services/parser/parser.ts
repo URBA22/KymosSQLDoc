@@ -1,4 +1,4 @@
-import { IFsManager } from '@core';
+import { IFsManager } from '../../core';
 
 export interface IParser {
     parseAsync(definition: string): Promise<string>;

@@ -37,7 +37,7 @@ export class Command implements ICommand {
         }
     }
 
-    private prettyTitle(): string {
+    public prettyTitle(): string {
         let prettyTitle = '';
 
         const colors = [

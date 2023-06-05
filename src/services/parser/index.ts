@@ -1,5 +1,5 @@
-import ParserBuilder from '@services/parser/builder';
-import { IParser } from '@services/parser/parser';
+import ParserBuilder from './builder';
+import { IParser } from './parser';
 
 
 export { ParserBuilder, IParser };

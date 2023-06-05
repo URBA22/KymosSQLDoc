@@ -1,4 +1,4 @@
-import { IFsManager } from '@core/fsmanager/fsmanager';
-import { FsManagerBuilder } from '@core/fsmanager/builder';
+import { IFsManager } from './fsmanager';
+import { FsManagerBuilder } from './builder';
 
 export { FsManagerBuilder, IFsManager };

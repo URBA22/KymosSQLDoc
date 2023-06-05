@@ -1,5 +1,5 @@
-import CommandBuilder from '@core/command/builder';
-import { ICommand } from '@core/command/command';
+import CommandBuilder from './builder';
+import { ICommand } from './command';
 
 
 export { CommandBuilder, ICommand };

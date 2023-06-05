@@ -1,6 +1,6 @@
-import { IFsManager } from '@core';
-import { Guard, IParser } from '@services';
-import { Parser } from '@services/parser/parser';
+import { IFsManager } from '../../core';
+import { Guard, IParser } from '..';
+import { Parser } from './parser';
 
 interface IParserBuilder_Step0 {
     withFsManager(fsManager: IFsManager): IParserBuilder_Step1;

@@ -1,5 +1,5 @@
-import { Guard } from '@services';
-import { ICommand, Command } from '@core/command/command';
+import { Guard } from '../../services';
+import { ICommand, Command } from './command';
 
 
 interface ICommandBuilder_Step0 {

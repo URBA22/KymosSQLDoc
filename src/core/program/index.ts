@@ -1,4 +1,4 @@
-import ProgramBuilder from '@core/program/builder';
-import { IProgram } from '@core/program/program';
+import ProgramBuilder from './builder';
+import { IProgram } from './program';
 
 export { ProgramBuilder, IProgram };

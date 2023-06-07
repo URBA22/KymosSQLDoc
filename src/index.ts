@@ -1,6 +1,7 @@
 #! /usr/bin/env node
 
 import { CommandBuilder, FsManagerBuilder, ProgramBuilder } from './core';
+import { PathManager } from './core/fsmanager/fsmanager';
 import ParserBuilder from './services/parser/builder';
 /*
 const version = '0.0.1';
@@ -18,8 +19,13 @@ const command = CommandBuilder
 const fsManager = FsManagerBuilder
     .createFsManager()
     .build();
-const result = fsManager.readFileAsync("./tests/mockup/examples/StpXImptPdm_Articolo.sql");
-result.then((arg) => {console.log(arg)});
+/*const result = fsManager.readFileAsync('./tests/mockup/examples/StpXImptPdm_Articolo.sql');
+result.then((arg) => {console.log(arg);});*/
+
+const pathResult = fsManager.readDirectoryAsync('./tests');
+pathResult.then((arg)=>{
+    console.log('#FINE#');
+});
 
 /*
 const parser = ParserBuilder

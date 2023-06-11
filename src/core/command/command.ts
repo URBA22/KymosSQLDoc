@@ -28,7 +28,8 @@ export class Command implements ICommand {
         this.command = new CLICommand()
             .version(version)
             .description(description)
-            .addHelpText('beforeAll', this.prettyTitle);
+            .addHelpText('beforeAll', this.prettyTitle)
+            .exitOverride(); 
 
         for (const option of options) {
             this.command.option(

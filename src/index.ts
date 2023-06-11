@@ -1,5 +1,6 @@
 #! /usr/bin/env node
 
+import { argv } from 'process';
 import { CommandBuilder, FsManagerBuilder, ProgramBuilder } from './core';
 import ParserBuilder from './services/parser/builder';
 
@@ -14,6 +15,9 @@ const command = CommandBuilder
     .withOption('-o, --out <value>', 'Write documentation to a specific file/drectory')
     .withOption('-f, --format <value>', 'Chose between html and md, or both. Default is md')
     .build();
+
+const s = argv;
+console.log(argv);
 
 const fsManager = FsManagerBuilder
     .createFsManager()

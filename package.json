@@ -31,7 +31,7 @@
   },
   "homepage": "https://github.com/URBA22/KymosSQLDoc#readme",
   "devDependencies": {
-    "@types/figlet": "^1.5.5",
+    "@types/figlet": "^1.5.6",
     "@types/jest": "^29.5.2",
     "@types/node": "^18.16.0",
     "@typescript-eslint/eslint-plugin": "^5.59.1",

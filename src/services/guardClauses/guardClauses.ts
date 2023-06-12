@@ -1,4 +1,5 @@
-import { ArgumentNullError, ArgumentNullOrEmptyError } from './errors';
+import { ArgumentNullError, ArgumentNullOrEmptyError, InvalidPathError } from './errors';
+import fs from 'fs';
 
 export namespace Guard {
     export class Against {
@@ -14,6 +15,15 @@ export namespace Guard {
             if (object === null || object === undefined || object === '') {
                 throw new ArgumentNullOrEmptyError(name);
             }
+        }
+
+        static InvalidPath(path: string) {
+            this.NullOrEmpty(path, 'path');
+
+            if (!fs.existsSync(path)) {
+                throw new InvalidPathError(path);
+            }
+
         }
     }
 }

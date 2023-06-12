@@ -1,0 +1,44 @@
+{
+    "path": "./",
+    "child": {
+        "name": "tests",
+        "directory": "./tests",
+        "files": [
+            "fileJson.json"
+        ],
+        "children": [
+            {
+                "name": "earlytest",
+                "directory": "./tests/earlytest",
+                "files": [
+                    "test1.sql"
+                ],
+                "children": []
+            },
+            {
+                "name": "mockup",
+                "directory": "./tests/mockup",
+                "files": [],
+                "children": [
+                    {
+                        "name": "examples",
+                        "directory": "./tests/mockup/examples",
+                        "files": [
+                            "NoName.sql",
+                            "StpXImptPdm_Articolo.sql"
+                        ],
+                        "children": []
+                    },
+                    {
+                        "name": "otherexample",
+                        "directory": "./tests/mockup/otherexample",
+                        "files": [
+                            "NoName2.sql"
+                        ],
+                        "children": []
+                    }
+                ]
+            }
+        ]
+    }
+}

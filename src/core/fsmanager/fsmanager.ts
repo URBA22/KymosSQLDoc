@@ -1,4 +1,3 @@
-/* eslint-disable max-depth */
 import { Console } from 'console';
 import fs, { readFileSync, readdir, readdirSync } from 'fs';
 import { test } from 'node:test';
@@ -35,6 +34,7 @@ export class FsManager implements IFsManager {
         
     }
 
+    // TODO: noawait in loop e usa Promise.all
     public async readSubDirectory(path: string): Promise<PathManager> {
         //oggetto di tipo PathManager che serve a trovare tutti i percorsi
         const pm: PathManager = new PathManager(path, [], []);
@@ -48,11 +48,14 @@ export class FsManager implements IFsManager {
                 pm.children?.push(await this.readSubDirectory(path + '/' + nextFile));
             else
                 pm.files?.push(nextFile);
-        }        
+        }      
 
         return pm;
     }
 
+    // TODO: modifca metodo 
+    // usa exixtsSync https://microsoft.github.io/PowerBI-JavaScript/modules/_node_modules__types_node_fs_d_._fs_.html
+    // lstatSync
     async isPath(path: string): Promise<boolean> {
         //controlla se il percorso passato è una cartella
         let ispath = false;
@@ -92,6 +95,7 @@ export class FsManager implements IFsManager {
     }
 }
 
+// TODO: cambia nome in Directory
 export class PathManager {
 
     public originalDirectory?: string;   //directory che contiene i file e le altre directory
@@ -106,6 +110,7 @@ export class PathManager {
     }
 }
 
+// TODO: Cambia nome in Root
 export class Directory {
     public path: string;
     public child: PathManager;

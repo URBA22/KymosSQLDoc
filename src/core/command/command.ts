@@ -4,6 +4,7 @@ import figlet from 'figlet';
 
 export interface ICommand {
     parseAsync(argv: string[]): Promise<OptionValues>;
+    get prettyTitle(): string;
 }
 
 export class Command implements ICommand {
@@ -27,7 +28,8 @@ export class Command implements ICommand {
         this.command = new CLICommand()
             .version(version)
             .description(description)
-            .addHelpText('beforeAll', this.prettyTitle());
+            .addHelpText('beforeAll', this.prettyTitle)
+            .exitOverride(); 
 
         for (const option of options) {
             this.command.option(
@@ -37,7 +39,10 @@ export class Command implements ICommand {
         }
     }
 
-    public prettyTitle(): string {
+    /**
+     * Command title but prettier
+     */
+    get prettyTitle(): string {
         let prettyTitle = '';
 
         const colors = [

@@ -1,7 +1,7 @@
 #! /usr/bin/env node
 
 import { CommandBuilder, FsManagerBuilder, ProgramBuilder } from './core';
-import { PathManager } from './core/fsmanager/fsmanager';
+import { Directory } from './core/fsmanager/fsmanager';
 import ParserBuilder from './services/parser/builder';
 /*
 const version = '0.0.1';

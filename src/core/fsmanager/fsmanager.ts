@@ -24,33 +24,40 @@ export class FsManager implements IFsManager {
 
     async readDirectoryAsync(path: string): Promise<Root> {
         //oggetto contenente tutto i percorsi 
-        const dir: Root = new Root(path, await this.readSubDirectory(path));
+        const root: Root = new Root(path.substring(0, path.lastIndexOf('/')+1), await this.readSubDirectory(path));
         //serializzazione in json
-        const jsonString = JSON.stringify(dir);
+        const jsonString = JSON.stringify(root);
         //file di tipo json
         this.writeFileAsync('./tests/fileJson.json', jsonString);
 
-        return dir;
+        return root;
         
     }
 
-    // TODO: noawait in loop e usa Promise.all
     public async readSubDirectory(path: string): Promise<Directory> {
-        //oggetto di tipo PathManager che serve a trovare tutti i percorsi
-        const pm: Directory = new Directory(path, [], []);
+        //oggetto di tipo Directory che conterrà tutti i percorsi dopo quello passato
+        const dir: Directory = new Directory(path, path.substring(path.lastIndexOf('/') + 1), [], []);
         //legge tutto quello che c'è dopo il percorso dato
         const content: string[] = readdirSync(path);
+        //array contenente i percorsi figli del percorso passato, dichiarato come Promise<> per
+        //migliorare le prestazioni evitando l'await
+        const arrDirectories:Promise<Directory>[] = [];
         //controlla per ogni percorso che trova se è un file o una cartella, nel primo caso
         //aggiunge il file ai file del percorso originale, nel secondo caso richiama il metodo 
         //passando il percorso della cartella trovata
         for (const nextFile of content) {
-            if (await this.isPath(path + '/' + nextFile))
-                pm.children?.push(await this.readSubDirectory(path + '/' + nextFile));
+            if (await this.isPath(path + '/' + nextFile)){
+                arrDirectories.push(this.readSubDirectory(path+'/'+nextFile));
+            }
             else
-                pm.files?.push(nextFile);
+            {
+                dir.files?.push(nextFile);
+            }
         }      
-
-        return pm;
+        //dopo che tutti i thread iniziati hanno finito assegna i valori dei percorsi presenti
+        dir.children = await Promise.all(arrDirectories);
+        
+        return dir;
     }
 
 
@@ -93,22 +100,25 @@ export class FsManager implements IFsManager {
 
 export class Directory {
 
-    public originalDirectory?: string;   //directory che contiene i file e le altre directory
+    public name?: string;       //conterrà il nome del percorso
+    public directory?: string;   //directory che contiene i file e le altre directory
     public files?: string[];             //file presenti nella directory
     public children?: Directory[];     //directory presenti nella directory originale
-
-
-    constructor(originalDirectory?: string, files?: string[], children?: Directory[]) {
-        this.originalDirectory = originalDirectory;
+    
+    //costruttore della classe Directory
+    constructor(directory?: string, name?:string, files?: string[], children?: Directory[]) {
+        this.name = name;
+        this.directory = directory;
         this.files = files;
-        this.children = children;
+        this.children = children; 
     }
 }
 
 export class Root {
-    public path: string;
-    public child: Directory;
+    public path: string;        //conterrà la path originale
+    public child: Directory;    //contiene tutti i percorsi successivi
 
+    //costruttore della classse Root
     constructor(path: string, child: Directory) {
         this.path = path;
         this.child = child;

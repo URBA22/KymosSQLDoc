@@ -1,91 +1,43 @@
 {
-    "path": "C:/Users/HP/Desktop/SCUOLA/italiano",
+    "path": "./",
     "child": {
-        "originalDirectory": "C:/Users/HP/Desktop/SCUOLA/italiano",
+        "name": "tests",
+        "directory": "./tests",
         "files": [
-            "saggio breve.pdf"
+            "fileJson.json"
         ],
         "children": [
             {
-                "originalDirectory": "C:/Users/HP/Desktop/SCUOLA/italiano/prima e seconda",
+                "name": "earlytest",
+                "directory": "./tests/earlytest",
                 "files": [
-                    "20210225_090503.PDF",
-                    "20210429_092501.PDF",
-                    "Bullismo per casa.docx",
-                    "Calvino Italo Il cavaliere inesistente.pdf",
-                    "Complementi.pptx",
-                    "Dirittinonrisp.docx",
-                    "esercitazione per le vacanze pasquali_2G.pdf",
-                    "Federigo e il suo falcone.odt",
-                    "Il_mito.pdf",
-                    "In_dormiveglia.pdf",
-                    "ITALIANO.pdf",
-                    "La racchia impertinente.rtf",
-                    "LA_NOVELLA_E_IL_RACCONTO.pptx",
-                    "La_seconda_fatica_di_Ercole.pdf",
-                    "Testo analisi logica per casa.docx",
-                    "Testo Covidi.docx",
-                    "testo per casa.odt",
-                    "un po' un miscuglio.odt",
-                    "Ungaretti_sint.pdf",
-                    "Ungaretti_sintetizzazione.pdf",
-                    "VERIFICA__DI_POESIA.docx",
-                    "X_Agosto.pdf"
-                ],
-                "children": [
-                    {
-                        "originalDirectory": "C:/Users/HP/Desktop/SCUOLA/italiano/prima e seconda/Testo ercole",
-                        "files": [
-                            "demone tit.jpg",
-                            "download.jpg",
-                            "drago div.jpg",
-                            "drago div2.jpg",
-                            "ds1 guar sant1.jpg",
-                            "ds1 guar sant2.jpg",
-                            "Seconda fatica erc.docx"
-                        ],
-                        "children": []
-                    }
-                ]
-            },
-            {
-                "originalDirectory": "C:/Users/HP/Desktop/SCUOLA/italiano/quarta",
-                "files": [
-                    "Il_Risorgimento.pdf",
-                    "lunit__dItalia.pdf",
-                    "PenaDiMorte.odt",
-                    "PenaDiMorte.pdf"
-                ],
-                "children": [
-                    {
-                        "originalDirectory": "C:/Users/HP/Desktop/SCUOLA/italiano/quarta/consegna",
-                        "files": [
-                            "Santuario1jpg.jpg",
-                            "Santuario2.jpg",
-                            "Santuario3.jpg",
-                            "SantuarioSantaMaria.odp"
-                        ],
-                        "children": []
-                    }
-                ]
-            },
-            {
-                "originalDirectory": "C:/Users/HP/Desktop/SCUOLA/italiano/terza",
-                "files": [
-                    "Boccaccio.odp",
-                    "Boccaccio.pdf",
-                    "Boccaccio.pptx",
-                    "Boccaccio1.odp",
-                    "Canzoniere.pptx",
-                    "CLASSE_CAPOVOLTA_3A2-D2.docx",
-                    "I_Trionfi.pptx",
-                    "Ludovico_Ariosto-_Orlando_Furioso.pptx",
-                    "LUDOVICO_ARIOSTO.pptx",
-                    "Secretum.pptx",
-                    "U9.odt",
-                    "U9.pdf"
+                    "test1.sql"
                 ],
                 "children": []
+            },
+            {
+                "name": "mockup",
+                "directory": "./tests/mockup",
+                "files": [],
+                "children": [
+                    {
+                        "name": "examples",
+                        "directory": "./tests/mockup/examples",
+                        "files": [
+                            "NoName.sql",
+                            "StpXImptPdm_Articolo.sql"
+                        ],
+                        "children": []
+                    },
+                    {
+                        "name": "otherexample",
+                        "directory": "./tests/mockup/otherexample",
+                        "files": [
+                            "NoName2.sql"
+                        ],
+                        "children": []
+                    }
+                ]
             }
         ]
     }

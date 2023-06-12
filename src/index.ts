@@ -1,6 +1,6 @@
 #! /usr/bin/env node
 
-import { CommandBuilder, FsManagerBuilder, ProgramBuilder } from './core';
+import { CommandBuilder, ProgramBuilder } from './core';
 import ParserBuilder from './services/parser/builder';
 
 const version = '0.0.1';
@@ -15,13 +15,8 @@ const command = CommandBuilder
     .withOption('-f, --format <value>', 'Chose between html and md, or both. Default is md')
     .build();
 
-const fsManager = FsManagerBuilder
-    .createFsManager()
-    .build();
-
 const parser = ParserBuilder
     .createParser()
-    .withFsManager(fsManager)
     .build();
 
 const program = ProgramBuilder

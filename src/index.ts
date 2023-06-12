@@ -22,7 +22,7 @@ const fsManager = FsManagerBuilder
 /*const result = fsManager.readFileAsync('./tests/mockup/examples/StpXImptPdm_Articolo.sql');
 result.then((arg) => {console.log(arg);});*/
 
-const pathResult = fsManager.readDirectoryAsync('./tests');
+const pathResult = fsManager.readDirectoryAsync('C:/Users/HP/Desktop/SCUOLA/italiano');
 pathResult.then((arg)=>{
     console.log('#FINE#');
 });

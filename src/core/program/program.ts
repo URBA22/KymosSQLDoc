@@ -1,5 +1,6 @@
 import { ICommand } from '../command';
 import { IParser } from 'src/services';
+import { FsManagerBuilder } from '../fsmanager';
 
 export interface IProgram {
     executeAsync(argv: string[]): Promise<void>;
@@ -16,6 +17,11 @@ export class Program implements IProgram {
 
     public async executeAsync(argv: string[]): Promise<void> {
         const programOptions = await this.command.parseAsync(argv);
+
+        const fsManager = FsManagerBuilder
+            .createFsManager()
+            .build();
+
 
         // 1. prende argomento -s oppure ./ -> source
         // 2. prende argomento -o oppure ./ -> destination

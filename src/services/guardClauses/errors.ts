@@ -19,3 +19,14 @@ export class ArgumentNullOrEmptyError implements Error {
         this.message = `Argument ${name} cannot be null, undefined or an empty string.`;
     }
 }
+
+export class InvalidPathError implements Error {
+    name: string;
+    message: string;
+    stack?: string | undefined;
+
+    constructor(path: string) {
+        this.name = path;
+        this.message = `"${path}": is not a valid path.`;
+    }
+}

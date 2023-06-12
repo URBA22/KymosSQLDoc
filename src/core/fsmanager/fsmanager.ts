@@ -7,9 +7,9 @@ export interface IFsManager {
     readFileAsync(path: string): Promise<string>;
     writeFileAsync(path: string, text: string): Promise<void>;
 
-    readDirectoryAsync(path: string): Promise<Directory>;
+    readDirectoryAsync(path: string): Promise<Root>;
     writeDirectoryAsync(path: string): Promise<void>;
-    readSubDirectory(path: string): Promise<PathManager>;
+    readSubDirectory(path: string): Promise<Directory>;
     isPath(path: string): Promise<boolean>;
 }
 
@@ -22,9 +22,9 @@ export class FsManager implements IFsManager {
         this.absolutePath = absolutePath ?? '';
     }
 
-    async readDirectoryAsync(path: string): Promise<Directory> {
+    async readDirectoryAsync(path: string): Promise<Root> {
         //oggetto contenente tutto i percorsi 
-        const dir: Directory = new Directory(path, await this.readSubDirectory(path));
+        const dir: Root = new Root(path, await this.readSubDirectory(path));
         //serializzazione in json
         const jsonString = JSON.stringify(dir);
         //file di tipo json
@@ -35,9 +35,9 @@ export class FsManager implements IFsManager {
     }
 
     // TODO: noawait in loop e usa Promise.all
-    public async readSubDirectory(path: string): Promise<PathManager> {
+    public async readSubDirectory(path: string): Promise<Directory> {
         //oggetto di tipo PathManager che serve a trovare tutti i percorsi
-        const pm: PathManager = new PathManager(path, [], []);
+        const pm: Directory = new Directory(path, [], []);
         //legge tutto quello che c'è dopo il percorso dato
         const content: string[] = readdirSync(path);
         //controlla per ogni percorso che trova se è un file o una cartella, nel primo caso
@@ -53,19 +53,15 @@ export class FsManager implements IFsManager {
         return pm;
     }
 
-    // TODO: modifca metodo 
-    // usa exixtsSync https://microsoft.github.io/PowerBI-JavaScript/modules/_node_modules__types_node_fs_d_._fs_.html
-    // lstatSync
+
     async isPath(path: string): Promise<boolean> {
         //controlla se il percorso passato è una cartella
-        let ispath = false;
-        let file = '';
-        try {
-            file = readFileSync(path, 'utf-8');
-        } catch (err) {
-            ispath = true;
+        if(fs.existsSync(path)){
+            if(fs.lstatSync(path).isDirectory()){
+                return true;
+            }
         }
-        return ispath;
+        return false;
     }
 
 
@@ -95,27 +91,25 @@ export class FsManager implements IFsManager {
     }
 }
 
-// TODO: cambia nome in Directory
-export class PathManager {
+export class Directory {
 
     public originalDirectory?: string;   //directory che contiene i file e le altre directory
     public files?: string[];             //file presenti nella directory
-    public children?: PathManager[];     //directory presenti nella directory originale
+    public children?: Directory[];     //directory presenti nella directory originale
 
 
-    constructor(originalDirectory?: string, files?: string[], children?: PathManager[]) {
+    constructor(originalDirectory?: string, files?: string[], children?: Directory[]) {
         this.originalDirectory = originalDirectory;
         this.files = files;
         this.children = children;
     }
 }
 
-// TODO: Cambia nome in Root
-export class Directory {
+export class Root {
     public path: string;
-    public child: PathManager;
+    public child: Directory;
 
-    constructor(path: string, child: PathManager) {
+    constructor(path: string, child: Directory) {
         this.path = path;
         this.child = child;
     }

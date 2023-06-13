@@ -29,11 +29,11 @@ export class FsManager implements IFsManager {
         if (root.endsWith('/')) {
             root.substring(0, root.length - 1);
         }
-
+        /*
         if (!path.startsWith('/')) {
             path = '/' + path;
         }
-
+        */
         return root + path;
     }
 

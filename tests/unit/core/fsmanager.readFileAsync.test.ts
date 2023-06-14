@@ -6,7 +6,7 @@ import { describe, beforeAll, test, expect } from '@jest/globals';
 describe('FsManager ReadFileAsync', () => {
     
     const fsManagerTest = new FsManager();
-    const absPath = 'c:/Users/Pietro/Documents/pcto/KymosSQLDoc/tests/mockup/';
+    const absPath = 'tests/mockup/';
     const relPath = './tests/mockup/';
     const wrongPath = './t//tests/mockup';
     const fileName = 'test.txt';

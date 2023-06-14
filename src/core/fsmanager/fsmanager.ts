@@ -26,14 +26,16 @@ export class FsManager implements IFsManager {
     }
 
     private static async mergePath(root: string, path: string) {
+        if(root=='')
+            return path;
         if (root.endsWith('/')) {
-            root.substring(0, root.length - 1);
+            root.substring(0, root.length - 2);
         }
-        /*
+        
         if (!path.startsWith('/')) {
             path = '/' + path;
         }
-        */
+        
         return root + path;
     }
 

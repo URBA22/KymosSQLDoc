@@ -6,6 +6,10 @@ import { InvalidPathError } from 'src/services/guardClauses/errors';
 import { describe, beforeAll, test, expect } from '@jest/globals';
 
 describe('FsManager ReadDirectoryAsync', () => {
+    const absPath = 'tests/mockup';
+
+    const relPath = './tests/mockup';
+
     beforeAll(() => {
         if (!existsSync('./tests/mockup/testpath'))
             mkdirSync('./tests/mockup/testpath');
@@ -17,25 +21,71 @@ describe('FsManager ReadDirectoryAsync', () => {
     });
 
     test('Shouold read directory when path is absolute', async () => {
-        const path = 'C:/Users/HP/Desktop/SCUOLA/pcto/KymosSQLDoc/tests/mockup';
-        const fs = new FsManager;
-        const actual = await fs.readDirectoryAsync(path);
-        const res = JSON.stringify(actual);
-        expect(res).toEqual('{"path":"C:/Users/HP/Desktop/SCUOLA/pcto/KymosSQLDoc/tests/","directory":{"name":"mockup","directory":"C:/Users/HP/Desktop/SCUOLA/pcto/KymosSQLDoc/tests/mockup","files":[],"children":[{"name":"examples","directory":"C:/Users/HP/Desktop/SCUOLA/pcto/KymosSQLDoc/tests/mockup/examples","files":["StpXImptPdm_Articolo.sql","templateProcedureDoc.md"],"children":[]},{"name":"testpath","directory":"C:/Users/HP/Desktop/SCUOLA/pcto/KymosSQLDoc/tests/mockup/testpath","files":["testfile.txt"],"children":[{"name":"testdir","directory":"C:/Users/HP/Desktop/SCUOLA/pcto/KymosSQLDoc/tests/mockup/testpath/testdir","files":[],"children":[]}]}]}}');
-
+        const fs = new FsManager();
+        const actual = await fs.readDirectoryAsync(absPath);
+        const expected: Root = {
+            path: 'tests/',
+            directory: {
+                name: 'mockup',
+                directory: 'tests/mockup',
+                files: [],
+                children: [{
+                    name: 'examples',
+                    directory: 'tests/mockup/examples',
+                    files: ['StpXImptPdm_Articolo.sql', 'templateProcedureDoc.md'],
+                    children: []
+                },
+                {
+                    name: 'testpath',
+                    directory: 'tests/mockup/testpath',
+                    files: ['testfile.txt'],
+                    children: [{
+                        name: 'testdir',
+                        directory: 'tests/mockup/testpath/testdir',
+                        files: [],
+                        children: []
+                    }]
+                }
+                ]
+            }
+        };
+        expect(actual).toEqual(expected);
     });
 
-    test('Shouold read directory when path is relative', async () => {
+    test('Should read directory when path is relative', async () => {
         const fs = new FsManager;
-        const path = './tests/mockup';
-        const actual = await fs.readDirectoryAsync(path);
-        const res = JSON.stringify(actual);
-        //res.replace('\', '');
-        expect(res).toEqual('{"path":"./tests/","directory":{"name":"mockup","directory":"./tests/mockup","files":[],"children":[{"name":"examples","directory":"./tests/mockup/examples","files":["StpXImptPdm_Articolo.sql","templateProcedureDoc.md"],"children":[]},{"name":"testpath","directory":"./tests/mockup/testpath","files":["testfile.txt"],"children":[{"name":"testdir","directory":"./tests/mockup/testpath/testdir","files":[],"children":[]}]}]}}');
-    });
+        const actual = await fs.readDirectoryAsync(relPath);
+        const expected: Root = {
+            path: './tests/',
+            directory: {
+                name: 'mockup',
+                directory: './tests/mockup',
+                files: [],
+                children: [{
+                    name: 'examples',
+                    directory: './tests/mockup/examples',
+                    files: ['StpXImptPdm_Articolo.sql', 'templateProcedureDoc.md'],
+                    children: []
+                },
+                {
+                    name: 'testpath',
+                    directory: './tests/mockup/testpath',
+                    files: ['testfile.txt'],
+                    children: [{
+                        name: 'testdir',
+                        directory: './tests/mockup/testpath/testdir',
+                        files: [],
+                        children: []
+                    }]
+                }
+                ]
+            }
+        };
+        expect(actual).toEqual(expected);
+});
 
     test('Shouold throw InvalidPathError when path is not valid', async () => {
-        
+
         const fs = new FsManager;
         await expect(fs.readDirectoryAsync('-p'))
             .rejects
@@ -44,7 +94,7 @@ describe('FsManager ReadDirectoryAsync', () => {
     });
 
     afterAll(() => {
-        
+
         rmdirSync('./tests/mockup/testpath/testdir');
         rmSync('./tests/mockup/testpath/testfile.txt');
         rmdirSync('./tests/mockup/testpath');

@@ -1,24 +1,35 @@
+import { unlinkSync } from 'fs';
+import { FsManager } from 'src/core/fsmanager/fsmanager';
+import { InvalidPathError } from 'src/services/guardClauses/errors';
+import { describe, beforeAll, test, expect } from '@jest/globals';
 
 describe('FsManager ReadFileAsync', () => {
+    
+    const fsManagerTest = new FsManager();
+    const absPath = 'c:/Users/Pietro/Documents/pcto/KymosSQLDoc/tests/mockup/';
+    const relPath = './tests/mockup/';
+    const wrongPath = './t//tests/mockup';
+    const fileName = 'test.txt';
+    const fileContent = ' prova ';
 
     beforeAll(() => {
-        // TODO: crea file 
+        fsManagerTest.writeFileAsync(absPath, fileName, fileContent);
     });
 
-    test('Shouold read file when path is absolute', () => {
-        // TODO: Testa passando url assoluto
+    test('Should read file when path is absolute', async () => {
+        expect( await fsManagerTest.readFileAsync(absPath, fileName)).toEqual(fileContent);
     });
     
-    test('Shouold read file when path is relative', () => {
-        // TODO: Testa passando url relativo
+    test('Should read file when path is relative', async () => {
+        expect(await fsManagerTest.readFileAsync(relPath, fileName)).toEqual(fileContent);
     });
     
-    test('Shouold throw InvalidPathError when path is not valid', () => {
-        // TODO: Testa passando path non valida
+    test('Should throw InvalidPathError when path is not valid', async () => {
+        await expect(fsManagerTest.readFileAsync(wrongPath, fileName)).rejects.toBeInstanceOf(InvalidPathError);
     });
 
     afterAll(() => {
-        // TODO: Elimina file
+        unlinkSync(absPath+fileName);
     });
 
 });

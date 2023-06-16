@@ -1,5 +1,5 @@
 import fs, { readdirSync } from 'fs';
-import { Guard } from 'src/services';
+import { Guard } from '../../services';
 import { IRoot, Root } from './core/Root';
 import { Directory } from './core/Directory';
 
@@ -26,16 +26,16 @@ export class FsManager implements IFsManager {
     }
 
     private static async mergePath(root: string, path: string) {
-        if(root=='')
+        if (root == '')
             return path;
         if (root.endsWith('/')) {
             root.substring(0, root.length - 2);
         }
-        
+
         if (!path.startsWith('/')) {
             path = '/' + path;
         }
-        
+
         return root + path;
     }
 

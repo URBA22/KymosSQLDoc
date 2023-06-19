@@ -1,5 +1,5 @@
 import { ICommand } from '../command';
-import { IParser } from 'src/services';
+import { IParser, ParserBuilder } from 'src/services';
 import { FsManagerBuilder } from '../fsmanager';
 import { FsManager } from '../fsmanager/fsmanager';
 import { Readline } from 'readline/promises';
@@ -44,12 +44,14 @@ export class Program implements IProgram {
     //crea il file di documentazionenel percorso passato come dest(destinazione)
     public async CreateDocumentation(dir: Directory, dest: string): Promise<void> {
         const fsManager = new FsManager();
-        const doc = new Documentation();
-        for (let file of dir.files) {
-            file = await doc.FileNameGuard(file);
-            const content = await this.ParsingFile(dir.directory, file);
-            doc.FileNameGuard(file);
-            fsManager.writeFileAsync(dest + '/' , file + '.md', content);
+        for (const file of dir.files) {
+            const content = await fsManager.readFileAsync(dir.directory, file);
+            const parser = ParserBuilder
+                .createParser()
+                .withDefinition(content)
+                .build();
+            const parsedDocumentation = await parser.parseAsync();
+            fsManager.writeFileAsync(dest + '/', file + '.md', content);
         }
 
     }

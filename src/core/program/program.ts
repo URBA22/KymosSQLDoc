@@ -1,7 +1,7 @@
 import { ICommand } from '../command';
 import { IParser, ParserBuilder } from 'src/services';
 import { FsManagerBuilder } from '../fsmanager';
-import { FsManager } from '../fsmanager/fsmanager';
+import { FsManager, IFsManager } from '../fsmanager/fsmanager';
 import { Readline } from 'readline/promises';
 import { Root } from '../fsmanager/core/Root';
 import { Directory } from '../fsmanager/core/Directory';
@@ -16,11 +16,11 @@ export interface IProgram {
 
 export class Program implements IProgram {
     private command: ICommand;
-    private parser: IParser;
+    private fsManager: IFsManager;
 
-    constructor(command: ICommand, parser: IParser) {
+    constructor(command: ICommand, fsManager: IFsManager) {
         this.command = command;
-        this.parser = parser;
+        this.fsManager = fsManager;
     }
 
     public async CreateDocFolders(dir: Directory, dest: string){
@@ -43,15 +43,14 @@ export class Program implements IProgram {
      */
     //crea il file di documentazionenel percorso passato come dest(destinazione)
     public async CreateDocumentation(dir: Directory, dest: string): Promise<void> {
-        const fsManager = new FsManager();
         for (const file of dir.files) {
-            const content = await fsManager.readFileAsync(dir.directory, file);
+            const content = await this.fsManager.readFileAsync(dir.directory, file);
             const parser = ParserBuilder
                 .createParser()
                 .withDefinition(content)
                 .build();
             const parsedDocumentation = await parser.parseAsync();
-            fsManager.writeFileAsync(dest + '/', file + '.md', content);
+            this.fsManager.writeFileAsync(dest + '/', file + '.md', content);
         }
 
     }
@@ -63,10 +62,9 @@ export class Program implements IProgram {
  * @returns
  */
     public async ParsingFile(path:string, file: string): Promise<string> {
-        const fsManager = new FsManager();
         const doc = new Documentation();
         //conterrà il contenuto del file
-        const content = await fsManager.readFileAsync(path,file);
+        const content = await this.fsManager.readFileAsync(path,file);
         //array che contiene i parametri fissi da controllare
         const titlesArr: string[] = ['@summary', '@author', '@custom', '@standard', '@version'];
         //descrizione delle @
@@ -92,12 +90,6 @@ export class Program implements IProgram {
 
 
 
-        const fsManager = FsManagerBuilder
-            .createFsManager()
-            .build();
-
-
-
         const source = programOptions.source ?? './';
         const destination = programOptions.destination ?? './';
 
@@ -113,7 +105,7 @@ export class Program implements IProgram {
         }
 
 
-        const sourcePaths: Root = await fsManager.readDirectoryAsync(source);
+        const sourcePaths: Root = await this.fsManager.readDirectoryAsync(source);
 
 
         // 1. prende argomento -s oppure ./ -> source

@@ -6,8 +6,9 @@ describe('FsManager ReadFileAsync', () => {
 
 
 
-    test('Should work fine', () => {
-        const type = utility.getObjectType(' \noR \n  AlTER      \n        PROCEDURE [dbo].[stpciao]  ');
+    test('Should work fine', async () => {
+        const typeOfProcedure = await utility.getObjectType(' \noR \n  AlTER      \n        viEW [dbo].[stpciao]  ');
+        console.log(typeOfProcedure);
         expect('').toEqual('');
     });
 

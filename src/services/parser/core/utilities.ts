@@ -1,3 +1,5 @@
+
+
 export interface IUtilities {
     titlesDescription(content: string, titlesArr: string[]): Promise<string[]>;
     FileNameGuard(file: string): Promise<string>;
@@ -10,6 +12,7 @@ export class Utilities implements Utilities {
     }
 
     public static tokens = ['@summary', '@author', '@custom', '@standard', '@version'];
+    public static typesOfProcedures = ['PROCEDURE' , 'TRIGGER' , 'VIEW' , 'FUNCTION' , 'TABLE'];
     /**
      * 
      * @param file 
@@ -21,14 +24,34 @@ export class Utilities implements Utilities {
         return file;
     }
 
-    public async getObjectType(content: string): Promise<string> {
+    public async getFullProcedureText(content: string) {
 
-        const regEx = new RegExp('([ ]*[\\n]*)*[CREATE]*([ ]*[\\n]*)*[OR]*([ ]*[\\n]*)*[ALTER]*([ ]*[\\n]*)*[A-Z]*([ ]*[\\n]*)*\\[*[A-Z]*.*\\]*');
+        const regEx = new RegExp('([ ]*[\\n]*)*[CREATE]*([ ]*[\\n]*)*[OR]*([ ]*[\\n]*)*[ALTER]*([ ]*[\\n]*)*[A-Z]*([ ]*[\\n]*)*(\\[*[A-Z]*.*\\]*)*');
         const regExArr = regEx.exec(content.toUpperCase());
         const res = regExArr?.toString();
-        console.log(res);
 
-        return '';
+        return res;
+    }
+
+    public async checkIfType(content:string|undefined, target:string):Promise<string>{
+        if(content?.toUpperCase().includes(target.toUpperCase()))
+            return target;
+        else
+            return '';
+    }
+
+
+    public async getObjectType(definition:string): Promise<string> {
+
+        const content = await this.getFullProcedureText(definition);
+        console.log(content);
+        let typeOfProcedure = '';
+        for (let i = 0; i < Utilities.typesOfProcedures.length && typeOfProcedure==''; i++){
+            typeOfProcedure = await this.checkIfType(content, Utilities.typesOfProcedures[i]);
+        }
+        if(typeOfProcedure=='')
+            throw new Error('type of procedure not valid or nonexistant');
+        return typeOfProcedure;
     }
 
     public async getObjectName(type: string, content: string): Promise<string> {

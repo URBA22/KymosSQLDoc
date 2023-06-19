@@ -60,19 +60,12 @@ export class Program implements IProgram {
  * @returns
  */
     public async ParsingFile(path:string, file: string): Promise<string> {
-        const doc = new Utilities();
+        const utility = new Utilities();
         //conterrà il contenuto del file
         const content = await this.fsManager.readFileAsync(path,file);
         //array che contiene i parametri fissi da controllare
         const titlesArr: string[] = ['@summary', '@author', '@custom', '@standard', '@version'];
-        //descrizione delle @
-        const titlesDescriptionArr = await doc.titlesDescription(content, titlesArr);
-
-        //nome procedura
-        const procedureName = await doc.getProcedureName(content);
-
-        //contiene i parametri
-        const parameters = await doc.getParameters(content, procedureName);
+        
 
         
 

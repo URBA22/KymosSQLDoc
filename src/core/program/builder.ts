@@ -1,6 +1,6 @@
 import { ICommand } from '../command';
 import { IProgram, Program } from './program';
-import { Guard, IParser } from '../../services';
+import { Guard } from '../../services';
 import { IFsManager } from '../fsmanager';
 import { FsManager } from '../fsmanager/fsmanager';
 

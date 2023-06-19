@@ -1,7 +1,6 @@
 #! /usr/bin / env node
 
-import { CommandBuilder, ProgramBuilder } from '../../core';
-import ParserBuilder from '../../services/parser/builder';
+import { CommandBuilder, ProgramBuilder, FsManagerBuilder } from '../../core';
 
 describe('FsManager ReadFileAsync', () => {
 
@@ -17,14 +16,15 @@ describe('FsManager ReadFileAsync', () => {
         .withOption('-f, --format <value>', 'Chose between html and md, or both. Default is md')
         .build();
 
-    const parser = ParserBuilder
-        .createParser()
+    const fsManager = FsManagerBuilder
+        .createFsManager()
         .build();
+
 
     const program = ProgramBuilder
         .createProgram()
         .withCommand(command)
-        .withParser(parser)
+        .withFsManager(fsManager)
         .build();
 
 

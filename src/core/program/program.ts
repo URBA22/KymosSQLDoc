@@ -1,12 +1,10 @@
 import { ICommand } from '../command';
-import { IParser, ParserBuilder } from 'src/services';
-import { FsManagerBuilder } from '../fsmanager';
+import { ParserBuilder } from 'src/services';
 import { FsManager, IFsManager } from '../fsmanager/fsmanager';
-import { Readline } from 'readline/promises';
 import { Root } from '../fsmanager/core/Root';
 import { Directory } from '../fsmanager/core/Directory';
 import { Documentation } from '../../services/parser/core/Documentation';
-import fs, { readFileSync } from 'fs';
+import fs from 'fs';
 import { InvalidPathError } from 'src/services/guardClauses/errors';
 
 
@@ -55,7 +53,7 @@ export class Program implements IProgram {
 
     }
 
-/**
+    /**
  * 
  * @param path 
  * @param file 

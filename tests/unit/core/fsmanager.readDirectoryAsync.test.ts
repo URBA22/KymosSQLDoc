@@ -1,5 +1,4 @@
 import { mkdirSync, rmdirSync, writeFileSync, rmSync, existsSync } from 'fs';
-import { Directory } from 'src/core/fsmanager/core/Directory';
 import { Root } from 'src/core/fsmanager/core/Root';
 import { FsManager } from 'src/core/fsmanager/fsmanager';
 import { InvalidPathError } from 'src/services/guardClauses/errors';
@@ -82,7 +81,7 @@ describe('FsManager ReadDirectoryAsync', () => {
             }
         };
         expect(actual).toEqual(expected);
-});
+    });
 
     test('Shouold throw InvalidPathError when path is not valid', async () => {
 

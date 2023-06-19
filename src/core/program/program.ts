@@ -5,8 +5,9 @@ import { FsManager } from '../fsmanager/fsmanager';
 import { Readline } from 'readline/promises';
 import { Root } from '../fsmanager/core/Root';
 import { Directory } from '../fsmanager/core/Directory';
-import { Docs } from '../fsmanager/core/Docs';
+import { Documentation } from '../../services/parser/core/Documentation';
 import fs, { readFileSync } from 'fs';
+import { InvalidPathError } from 'src/services/guardClauses/errors';
 
 
 export interface IProgram {
@@ -23,30 +24,60 @@ export class Program implements IProgram {
     }
 
     public async CreateDocFolders(dir: Directory, dest: string){
-        const destPath: string = dest + '/' + dir.name;
-        fs.mkdirSync(destPath);
-        this.CreateDocumentation(dir,destPath);
+        const fsManager = new FsManager();
+        await fsManager.writeDirectoryAsync(dest, dir.name);
+
+        await this.CreateDocumentation(dir,dest+'/'+dir.name);
+
+        const createDocFolderThreads: Promise<void>[]=[];
+
         for(const child of dir.children)
-            await this.CreateDocFolders(child, destPath);
+            createDocFolderThreads.push(this.CreateDocFolders(child, dest + '/' + dir.name));
+        Promise.all(createDocFolderThreads);
     }
 
+    /**
+     * 
+     * @param dir 
+     * @param dest 
+     */
+    //crea il file di documentazionenel percorso passato come dest(destinazione)
     public async CreateDocumentation(dir: Directory, dest: string): Promise<void> {
-        const docs = new Docs;
-        for (const file of dir.files) {
+        const fsManager = new FsManager();
+        const doc = new Documentation();
+        for (let file of dir.files) {
+            file = await doc.FileNameGuard(file);
             const content = await this.ParsingFile(dir.directory, file);
-            docs.FileNameGuard(file);
-            fs.writeFileSync(dest + '/' + file + '.md', content);
+            doc.FileNameGuard(file);
+            fsManager.writeFileAsync(dest + '/' , file + '.md', content);
         }
 
     }
 
+/**
+ * 
+ * @param path 
+ * @param file 
+ * @returns
+ */
     public async ParsingFile(path:string, file: string): Promise<string> {
         const fsManager = new FsManager();
-        const docs = new Docs();
-        let content = '';
-        content = await fsManager.readFileAsync(path,file);
+        const doc = new Documentation();
+        //conterrà il contenuto del file
+        const content = await fsManager.readFileAsync(path,file);
+        //array che contiene i parametri fissi da controllare
         const titlesArr: string[] = ['@summary', '@author', '@custom', '@standard', '@version'];
-        const titlesDescriptionArr = await docs.titlesDescription(content, titlesArr);
+        //descrizione delle @
+        const titlesDescriptionArr = await doc.titlesDescription(content, titlesArr);
+
+        //nome procedura
+        const procedureName = await doc.getProcedureName(content);
+
+        //contiene i parametri
+        const parameters = await doc.getParameters(content, procedureName);
+
+        
+
         return content;
     }
 
@@ -58,14 +89,6 @@ export class Program implements IProgram {
         const programOptions = await this.command.parseAsync(argv);
 
 
-        let command = '';
-
-        for (let i = 2; i < argv.length; i++) {
-            command+=argv[i];
-        }
-
-        console.log(command);
-
 
         const fsManager = FsManagerBuilder
             .createFsManager()
@@ -73,34 +96,20 @@ export class Program implements IProgram {
 
 
 
-        let source = './';
-        let destination = './';
+        const source = programOptions.source ?? './';
+        const destination = programOptions.destination ?? './';
 
-        if (command.includes('-s'))
-            if (command.includes('-o')) {
-                source = (command.substring(command.indexOf('-s') + 2, command.indexOf('-o'))).trim();
-                destination = (command.substring(command.indexOf('-o') + 2)).trim();
-            }
-            else {
-                source = (command.substring(command.indexOf('-s') + 2)).trim();
-            }
-        else
-        if (command.includes('-o'))
-            destination = (command.substring(command.indexOf('-o') + 2)).trim();
+        
 
+
+        
         if (!fs.existsSync(source) || !fs.lstatSync(source).isDirectory()){
-            console.log('invalid source path');
-            return;
+            throw new InvalidPathError(source);
         }
-            
         if (!fs.existsSync(destination) && !fs.lstatSync(destination).isDirectory()) {
-            console.log('invalid destination path');
-            return;
+            throw new InvalidPathError(destination);
         }
 
-
-        console.log(source);
-        console.log(destination);
 
         const sourcePaths: Root = await fsManager.readDirectoryAsync(source);
 

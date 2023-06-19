@@ -3,7 +3,7 @@ import { ParserBuilder } from 'src/services';
 import { FsManager, IFsManager } from '../fsmanager/fsmanager';
 import { Root } from '../fsmanager/core/Root';
 import { Directory } from '../fsmanager/core/Directory';
-import { Documentation } from '../../services/parser/core/Documentation';
+import { Utilities } from '../../services/parser/core/utilities';
 import fs from 'fs';
 import { InvalidPathError } from 'src/services/guardClauses/errors';
 
@@ -60,7 +60,7 @@ export class Program implements IProgram {
  * @returns
  */
     public async ParsingFile(path:string, file: string): Promise<string> {
-        const doc = new Documentation();
+        const doc = new Utilities();
         //conterrà il contenuto del file
         const content = await this.fsManager.readFileAsync(path,file);
         //array che contiene i parametri fissi da controllare

@@ -1,7 +1,6 @@
 #! /usr/bin/env node
 
-import { CommandBuilder, ProgramBuilder } from './core';
-import ParserBuilder from './services/parser/builder';
+import { CommandBuilder, FsManagerBuilder, ProgramBuilder } from './core';
 
 const version = '0.0.1';
 
@@ -12,17 +11,20 @@ const command = CommandBuilder
     .withDescription('Autmatic SQL Server documentation generator.\nPowered by Kymos Srl Sb.')
     .withOption('-s, --source <value>', 'From specific source directory/file')
     .withOption('-o, --out <value>', 'Write documentation to a specific file/drectory')
-    .withOption('-f, --format <value>', 'Chose between html and md, or both. Default is md')
+    // .withOption('-f, --format <value>', 'Chose between html and md, or both. Default is md')
     .build();
 
-const parser = ParserBuilder
-    .createParser()
+
+const fsManager = FsManagerBuilder
+    .createFsManager()
     .build();
+
 
 const program = ProgramBuilder
     .createProgram()
     .withCommand(command)
-    .withParser(parser)
+    .withFsManager(fsManager)
     .build();
+
 
 program.executeAsync(process.argv);

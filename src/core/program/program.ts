@@ -21,15 +21,15 @@ export class Program implements IProgram {
         this.fsManager = fsManager;
     }
 
-    public async CreateDocFolders(dir: Directory, dest: string){
+    public async CreateDocFolders(dir: Directory, dest: string) {
         const fsManager = new FsManager();
         await fsManager.writeDirectoryAsync(dest, dir.name);
 
-        await this.CreateDocumentation(dir,dest+'/'+dir.name);
+        await this.CreateDocumentation(dir, dest + '/' + dir.name);
 
-        const createDocFolderThreads: Promise<void>[]=[];
+        const createDocFolderThreads: Promise<void>[] = [];
 
-        for(const child of dir.children)
+        for (const child of dir.children)
             createDocFolderThreads.push(this.CreateDocFolders(child, dest + '/' + dir.name));
         Promise.all(createDocFolderThreads);
     }
@@ -59,15 +59,15 @@ export class Program implements IProgram {
  * @param file 
  * @returns
  */
-    public async ParsingFile(path:string, file: string): Promise<string> {
+    public async ParsingFile(path: string, file: string): Promise<string> {
         const utility = new Utilities();
         //conterrà il contenuto del file
-        const content = await this.fsManager.readFileAsync(path,file);
+        const content = await this.fsManager.readFileAsync(path, file);
         //array che contiene i parametri fissi da controllare
         const titlesArr: string[] = ['@summary', '@author', '@custom', '@standard', '@version'];
-        
 
-        
+
+
 
         return content;
     }
@@ -84,11 +84,11 @@ export class Program implements IProgram {
         const source = programOptions.source ?? './';
         const destination = programOptions.destination ?? './';
 
-        
 
 
-        
-        if (!fs.existsSync(source) || !fs.lstatSync(source).isDirectory()){
+
+
+        if (!fs.existsSync(source) || !fs.lstatSync(source).isDirectory()) {
             throw new InvalidPathError(source);
         }
         if (!fs.existsSync(destination) && !fs.lstatSync(destination).isDirectory()) {

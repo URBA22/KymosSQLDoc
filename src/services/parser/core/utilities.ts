@@ -21,10 +21,20 @@ export class Utilities implements Utilities {
         return file;
     }
 
+    public async getObjectType(content: string): Promise<string> {
 
-    
-    public async getObjectName (type: string, content: string): Promise<string>{
-        const regex = /([CREATE][ALTER])+([ \n])+[A-Za-z]+([ \n])+\[[A-Za-z]+\]\.\[[A-Za-z]+\]/gm; 
+        const regEx = new RegExp('([ ]*[\\n]*)*[CREATE]*([ ]*[\\n]*)*[OR]*([ ]*[\\n]*)*[ALTER]*([ ]*[\\n]*)*[A-Z]*([ ]*[\\n]*)*\\[*[A-Z]*.*\\]*');
+        const regExArr = regEx.exec(content.toUpperCase());
+        const res = regExArr?.toString();
+        console.log(res);
+
+        return '';
+    }
+
+    public async getObjectName(type: string, content: string): Promise<string> {
+
+
+        /*
         const objectName = content.substring(content.toUpperCase().indexOf('') + 15, content.indexOf('('));
 
         if (objectName.includes('.'))
@@ -33,8 +43,10 @@ export class Utilities implements Utilities {
             objectName.substring(objectName.lastIndexOf('[') + 1, objectName.lastIndexOf(']'));
 
         objectName.trim;
-
+        
         return objectName;
+        */
+        return '';
     }
 
     public async tokensDescription(content: string): Promise<string[]> {
@@ -63,7 +75,7 @@ export class Utilities implements Utilities {
 
         return parameters;
     }
-    
+
 
 
 

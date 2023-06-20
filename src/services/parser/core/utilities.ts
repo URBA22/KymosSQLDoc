@@ -24,7 +24,7 @@ export class Utilities implements Utilities {
         return file;
     }
 
-    public async getFullProcedureText(content: string) {
+    public getFullProcedureText(content: string) {
 
         const regEx = new RegExp('([ ]*[\\n]*)*[CREATE]*([ ]*[\\n]*)*[OR]*([ ]*[\\n]*)*[ALTER]*([ ]*[\\n]*)*[A-Z]*([ ]*[\\n]*)*(\\[*[A-Z]*.*\\]*)*');
         const regExArr = regEx.exec(content.toUpperCase());
@@ -33,7 +33,7 @@ export class Utilities implements Utilities {
         return res;
     }
 
-    public async checkIfType(content:string|undefined, target:string):Promise<string>{
+    public checkIfType(content:string|undefined, target:string): string{
         if(content?.toUpperCase().includes(target.toUpperCase()))
             return target;
         else
@@ -41,12 +41,12 @@ export class Utilities implements Utilities {
     }
 
 
-    public async getObjectType(definition:string): Promise<string> {
+    public getObjectType(definition:string): string {
 
-        const content = await this.getFullProcedureText(definition);
+        const content =  this.getFullProcedureText(definition);
         let typeOfProcedure = '';
         for (let i = 0; i < Utilities.typesOfProcedures.length && typeOfProcedure==''; i++){
-            typeOfProcedure = await this.checkIfType(content, Utilities.typesOfProcedures[i]);
+            typeOfProcedure =  this.checkIfType(content, Utilities.typesOfProcedures[i]);
         }
         if(typeOfProcedure=='')
             throw new Error('type of procedure not valid or nonexistant');

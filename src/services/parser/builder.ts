@@ -1,13 +1,19 @@
 import { Guard } from '../guardClauses';
 import { IParser } from './parser';
 import { StoredProcedureParser } from './storedProcedureParser';
+import { Utilities } from './core/utilities';
+import { TriggerParser } from './triggerParser';
+import { ViewParser } from './viewParser';
+import { ScalarFunctionParser } from './scalarFunctionParser';
+import { TableFunctionParser } from './tableFunctionParser';
+import { TableParser } from './tableParser';
 
 interface IParserBuilder_Step0 {
     withDefinition(definition: string): IParserBuilder_Step1;
 }
 
 interface IParserBuilder_Step1 {
-    build(): IParser;
+    build(): IParser | undefined;
 }
 
 export default class ParserBuilder implements IParserBuilder_Step0, IParserBuilder_Step1 {
@@ -15,7 +21,7 @@ export default class ParserBuilder implements IParserBuilder_Step0, IParserBuild
     
     private constructor() { }
 
-    private getSQLTypeObject(): IParser {
+    private getSQLTypeObject():IParser | undefined {
         /*
             CREATE / CREATE<sl>OR<sl>ALTER / ALTER
             <sl>
@@ -27,8 +33,35 @@ export default class ParserBuilder implements IParserBuilder_Step0, IParserBuild
             <sl> -> uno o più spazi o 'a capo'
 
         */
+        const utility = new Utilities();
+
+        const typeOfObject = utility.getObjectType(this.definition as string);
+
+        switch(typeOfObject){
+
+        case 'PROCEDURE':
+            return new StoredProcedureParser(this.definition as string);
+            break;
+
+        case 'TRIGGER':
+            return new TriggerParser(this.definition as string);
+            break;
+
+        case 'VIEW':
+            return new ViewParser(this.definition as string);
+            break;
+        case 'FUNCTION':
+            return new ScalarFunctionParser(this.definition as string);
+            return new TableFunctionParser(this.definition as string);
+            break;
+
+        case 'TABLE':
+            return new TableParser(this.definition as string);
+            break;
+        }
+
+        return undefined;
         
-        return new StoredProcedureParser(this.definition as string);
     }
 
     public static createParser(): IParserBuilder_Step0 {
@@ -42,7 +75,7 @@ export default class ParserBuilder implements IParserBuilder_Step0, IParserBuild
         return this;
     }
 
-    public build(): IParser {
+    public build(): IParser | undefined {
         return this.getSQLTypeObject();
     }
 }

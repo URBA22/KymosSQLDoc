@@ -47,7 +47,7 @@ export class Program implements IProgram {
                 .createParser()
                 .withDefinition(content)
                 .build();
-            const parsedDocumentation = await parser.parseAsync();
+            const parsedDocumentation = await parser?.parseAsync();
             this.fsManager.writeFileAsync(dest + '/', file + '.md', content);
         }
 

@@ -44,7 +44,6 @@ export class Utilities implements Utilities {
     public async getObjectType(definition:string): Promise<string> {
 
         const content = await this.getFullProcedureText(definition);
-        console.log(content);
         let typeOfProcedure = '';
         for (let i = 0; i < Utilities.typesOfProcedures.length && typeOfProcedure==''; i++){
             typeOfProcedure = await this.checkIfType(content, Utilities.typesOfProcedures[i]);
@@ -54,31 +53,37 @@ export class Utilities implements Utilities {
         return typeOfProcedure;
     }
 
-    public async getObjectName(type: string, content: string): Promise<string> {
+    public async getObjectName(content: string): Promise<string> {
 
 
-        /*
-        const objectName = content.substring(content.toUpperCase().indexOf('') + 15, content.indexOf('('));
+        const fullText= await this.getFullProcedureText(content);
+        const procedureType = await this.getObjectType(content);
+        let objectName = fullText?.substring(fullText.toUpperCase().indexOf(procedureType) + procedureType.length, fullText?.length);
 
-        if (objectName.includes('.'))
-            objectName.substring(objectName.lastIndexOf('.') + 1, objectName.length - 1);
-        if (objectName.includes('[') && objectName.includes(']'))
-            objectName.substring(objectName.lastIndexOf('[') + 1, objectName.lastIndexOf(']'));
+        if (objectName?.includes('.'))
+            objectName = objectName.substring(objectName.lastIndexOf('.') + 1, objectName.length - 1);
+        if (objectName?.includes('[') && objectName?.includes(']'))
+            objectName = objectName.substring(objectName.lastIndexOf('[') + 1, objectName.lastIndexOf(']'));
 
-        objectName.trim;
-        
-        return objectName;
-        */
-        return '';
+
+        if(objectName!=undefined)
+            return objectName;
+
+        throw new Error('could not find procedure name');
     }
 
-    public async tokensDescription(content: string): Promise<string[]> {
+    public async getTokensDescription(content: string): Promise<string[]> {
+        let tempString = content.substring(content.indexOf(Utilities.tokens[Utilities.tokens.length-1]));
+        tempString = tempString.substring(0, tempString.indexOf('\n')+1);
+        content = content.substring(content.indexOf(Utilities.tokens[0]), content.indexOf(Utilities.tokens[Utilities.tokens.length-1])+tempString.length);
         const tokensDescriptionArr: string[] = [];
-        for (let i = 0; i < Utilities.tokens.length - 1; i++) {
-            tokensDescriptionArr.push(content.substring(content.indexOf(Utilities.tokens[i]) + Utilities.tokens[i].length, content.indexOf(Utilities.tokens[i] + 1)));
-        }
-        tokensDescriptionArr.push(content.substring(content.indexOf(Utilities.tokens[Utilities.tokens.length - 1]) + Utilities.tokens[Utilities.tokens.length - 1].length, content.indexOf('**/')));
 
+        for (let i = 0; i < Utilities.tokens.length-1 ; i++) {
+            tokensDescriptionArr.push(content.substring(content.indexOf(Utilities.tokens[i]) + Utilities.tokens[i].length, content.indexOf('\n')));
+            content = content.substring(content.indexOf(Utilities.tokens[i+1]));
+        }
+        tokensDescriptionArr.push(tempString.substring(tempString.indexOf(Utilities.tokens[Utilities.tokens.length - 1]) + Utilities.tokens[Utilities.tokens.length - 1].length, tempString.indexOf('\n')));
+        
         return tokensDescriptionArr;
     }
 

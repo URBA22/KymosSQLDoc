@@ -48,29 +48,11 @@ export class Program implements IProgram {
                 .withDefinition(content)
                 .build();
             const parsedDocumentation = await parser?.parseAsync();
-            this.fsManager.writeFileAsync(dest + '/', file + '.md', content);
+            this.fsManager.writeFileAsync(dest + '/', file + '.md', parsedDocumentation as string);
         }
 
     }
 
-    /**
- * 
- * @param path 
- * @param file 
- * @returns
- */
-    public async ParsingFile(path: string, file: string): Promise<string> {
-        const utility = new Utilities();
-        //conterrà il contenuto del file
-        const content = await this.fsManager.readFileAsync(path, file);
-        //array che contiene i parametri fissi da controllare
-        const titlesArr: string[] = ['@summary', '@author', '@custom', '@standard', '@version'];
-
-
-
-
-        return content;
-    }
 
 
 

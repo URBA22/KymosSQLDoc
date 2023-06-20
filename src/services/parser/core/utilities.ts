@@ -12,7 +12,7 @@ export class Utilities implements Utilities {
     }
 
     public static tokens = ['@summary', '@author', '@custom', '@standard', '@version'];
-    public static typesOfProcedures = ['PROCEDURE' , 'TRIGGER' , 'VIEW' , 'FUNCTION' , 'TABLE'];
+    public static typesOfProcedures = ['PROCEDURE', 'TRIGGER', 'VIEW', 'FUNCTION', 'TABLE'];
     /**
      * 
      * @param file 
@@ -24,41 +24,64 @@ export class Utilities implements Utilities {
         return file;
     }
 
-    public getFullProcedureText(content: string) {
+    /*public static getFullProcedureText(content: string) {
 
-        const regEx = new RegExp('([ ]*[\\n]*)*[CREATE]*([ ]*[\\n]*)*[OR]*([ ]*[\\n]*)*[ALTER]*([ ]*[\\n]*)*[A-Z]*([ ]*[\\n]*)*(\\[*[A-Z]*.*\\]*)*');
-        const regExArr = regEx.exec(content.toUpperCase());
-        const res = regExArr?.toString();
+        let regEx = new RegExp('CREATE([ ]*[\\n]*)*OR([ ]*[\\n]*)*ALTER([ ]*[\\n]*)*[A-Z]*([ ]*[\\n]*)*(\\[*[A-Z]*.*\\]*)*');
+        let regExArr = regEx.exec(content.toUpperCase());
+        let res = regExArr?.toString();
+        if (res != undefined)
+            return res;
 
-        return res;
-    }
+        regEx = new RegExp('ALTER([ ]*[\\n]*)*[A-Z]*([ ]*[\\n]*)*(\\[*[A-Z]*.*\\]*)*');
+        regExArr = regEx.exec(content.toUpperCase());
+        res = regExArr?.toString();
+        if (res != undefined)
+            return res;
 
-    public checkIfType(content:string|undefined, target:string): string{
-        if(content?.toUpperCase().includes(target.toUpperCase()))
+        regEx = new RegExp('CREATE([ ]*[\\n]*)*[A-Z]*([ ]*[\\n]*)*(\\[*[A-Z]*.*\\]*)*');
+        regExArr = regEx.exec(content.toUpperCase());
+        res = regExArr?.toString();
+        if (res != undefined)
+            return res;
+
+
+        throw new Error('couldnt find type');
+    }*/
+
+    public static checkIfType(content: string | undefined, target: string): string {
+        if (content?.toUpperCase().includes(target.toUpperCase()))
             return target;
         else
             return '';
     }
 
+    public checkIfCarriageReturn(target: string): string {
 
-    public getObjectType(definition:string): string {
-
-        const content =  this.getFullProcedureText(definition);
-        let typeOfProcedure = '';
-        for (let i = 0; i < Utilities.typesOfProcedures.length && typeOfProcedure==''; i++){
-            typeOfProcedure =  this.checkIfType(content, Utilities.typesOfProcedures[i]);
-        }
-        if(typeOfProcedure=='')
-            throw new Error('type of procedure not valid or nonexistant');
-        return typeOfProcedure;
+        if (target.includes('\r'))
+            target = target.substring(0, target.indexOf('\r'));
+        return target;
     }
 
-    public async getObjectName(content: string): Promise<string> {
+
+    public static getObjectType(definition: string): string {
+
+        const splitDefinition = Utilities.splitDefinitionComment(definition as string);
+
+        if (splitDefinition.definition.toUpperCase().includes(this.typesOfProcedures[0]))
+            return this.typesOfProcedures[0];
+        if (splitDefinition.definition.toUpperCase().includes(this.typesOfProcedures[1]))
+            return this.typesOfProcedures[1];
+        return this.typesOfProcedures[2];
 
 
-        const fullText= await this.getFullProcedureText(content);
-        const procedureType = await this.getObjectType(content);
-        let objectName = fullText?.substring(fullText.toUpperCase().indexOf(procedureType) + procedureType.length, fullText?.length);
+    }
+
+    public static getObjectName(content: string, procedureType: string): string {
+
+
+        const split = this.splitDefinitionComment(content);
+
+        let objectName = split.definition.substring(split.definition.toUpperCase().indexOf(procedureType) + procedureType.length, split.definition.length);
 
         if (objectName?.includes('.'))
             objectName = objectName.substring(objectName.lastIndexOf('.') + 1, objectName.length - 1);
@@ -66,24 +89,25 @@ export class Utilities implements Utilities {
             objectName = objectName.substring(objectName.lastIndexOf('[') + 1, objectName.lastIndexOf(']'));
 
 
-        if(objectName!=undefined)
+        if (objectName != undefined)
             return objectName;
 
         throw new Error('could not find procedure name');
     }
 
     public async getTokensDescription(content: string): Promise<string[]> {
-        let tempString = content.substring(content.indexOf(Utilities.tokens[Utilities.tokens.length-1]));
-        tempString = tempString.substring(0, tempString.indexOf('\n')+1);
-        content = content.substring(content.indexOf(Utilities.tokens[0]), content.indexOf(Utilities.tokens[Utilities.tokens.length-1])+tempString.length);
+        let tempString = content.substring(content.indexOf(Utilities.tokens[Utilities.tokens.length - 1]));
+        tempString = tempString.substring(0, tempString.indexOf('\n') + 1);
+        content = content.substring(content.indexOf(Utilities.tokens[0]), content.indexOf(Utilities.tokens[Utilities.tokens.length - 1]) + tempString.length);
         const tokensDescriptionArr: string[] = [];
 
-        for (let i = 0; i < Utilities.tokens.length-1 ; i++) {
-            tokensDescriptionArr.push(content.substring(content.indexOf(Utilities.tokens[i]) + Utilities.tokens[i].length, content.indexOf('\n')));
-            content = content.substring(content.indexOf(Utilities.tokens[i+1]));
+        for (let i = 0; i < Utilities.tokens.length - 1; i++) {
+            tokensDescriptionArr.push(this.checkIfCarriageReturn(content.substring(content.indexOf(Utilities.tokens[i]) + Utilities.tokens[i].length, content.indexOf('\n'))));
+
+            content = content.substring(content.indexOf(Utilities.tokens[i + 1]));
         }
-        tokensDescriptionArr.push(tempString.substring(tempString.indexOf(Utilities.tokens[Utilities.tokens.length - 1]) + Utilities.tokens[Utilities.tokens.length - 1].length, tempString.indexOf('\n')));
-        
+        tokensDescriptionArr.push(this.checkIfCarriageReturn(tempString.substring(tempString.indexOf(Utilities.tokens[Utilities.tokens.length - 1]) + Utilities.tokens[Utilities.tokens.length - 1].length, tempString.indexOf('\n'))));
+
         return tokensDescriptionArr;
     }
 
@@ -91,7 +115,8 @@ export class Utilities implements Utilities {
         //conterrà i singoli parametri
         const parameters: string[] = [];
         //contiene il testo con tutti i parametri
-        let fullText: string = content.substring(content.indexOf(procedureName) + procedureName.length, content.indexOf(')') + 1);
+        let fullText: string = content.substring(content.indexOf(procedureName) + procedureName.length);
+
         fullText = fullText.substring(fullText.indexOf('(') + 1, fullText.indexOf(')'));
 
         while (fullText.includes('@')) {
@@ -101,11 +126,35 @@ export class Utilities implements Utilities {
 
         console.log(parameters);
 
+
         return parameters;
     }
 
+    public static splitDefinitionComment(content: string): {
+        definition: string;
+        comments: string;
+
+    } {
+        //TODO: implementa metodo
+        let commentedText = '';
+        while (content.includes('/**') || content.includes('--') || content.includes('/*')) {
+
+            commentedText += Utilities.getComment(content);
+            content = content.replace(Utilities.getComment(content), '');
+        }
+        return {
+            definition: content,
+            comments: commentedText,
+        };
+    }
+
+    public static getComment(content: string): string {
+        if (content.includes('/*') && content.indexOf('/*') < content.indexOf('--'))
+            return content.substring(content.indexOf('/*'), content.indexOf('*/') + 2);
+        return content.substring(content.indexOf('--'), content.indexOf('\n') + 2);
 
 
+    }
 
 }
 

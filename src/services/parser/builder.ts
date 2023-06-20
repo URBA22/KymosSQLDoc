@@ -33,9 +33,8 @@ export default class ParserBuilder implements IParserBuilder_Step0, IParserBuild
             <sl> -> uno o più spazi o 'a capo'
 
         */
-        const utility = new Utilities();
-
-        const typeOfObject = utility.getObjectType(this.definition as string);
+        const splitDefinition = Utilities.splitDefinitionComment(this.definition as string);
+        const typeOfObject = Utilities.getObjectType(splitDefinition.definition);
 
         switch(typeOfObject){
 

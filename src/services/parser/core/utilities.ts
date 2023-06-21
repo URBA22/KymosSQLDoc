@@ -140,10 +140,10 @@ export class Utilities implements Utilities {
     }
 
     public static getCreateOrAlter(content: string): string {
-        return this.createOrAlterArr[this.checkStringInArray(content, this.createOrAlterArr)];
+        return this.createOrAlterArr[this.checkStringOfArrayInString(content, this.createOrAlterArr)];
     }
 
-    public static checkStringInArray(content:string, arr:string[]): number{
+    public static checkStringOfArrayInString(content:string, arr:string[]): number{
         let index = -1;
         let boolGuard = false;
         do {

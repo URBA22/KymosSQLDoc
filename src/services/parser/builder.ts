@@ -34,7 +34,7 @@ export default class ParserBuilder implements IParserBuilder_Step0, IParserBuild
 
         */
         const splitDefinition = Utilities.splitDefinitionComment(this.definition as string);
-        const typeOfObject = Utilities.getObjectType(splitDefinition.definition);
+        const typeOfObject = Utilities.getObjectType(splitDefinition.definition, Utilities.getCreateOrAlter(splitDefinition.definition));
 
         switch(typeOfObject){
 

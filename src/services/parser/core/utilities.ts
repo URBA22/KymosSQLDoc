@@ -12,7 +12,7 @@ export class Utilities implements Utilities {
     }
 
     public static tokens = ['@summary', '@author', '@custom', '@standard', '@version'];
-    public static typesOfProcedures = ['PROCEDURE', 'TRIGGER', 'VIEW', 'FUNCTION', 'TABLE'];
+    public static typesOfObjects = ['PROCEDURE', 'TRIGGER', 'VIEW', 'FUNCTION', 'TABLE'];
     public static createOrAlterArr = ['CREATE OR ALTER', 'ALTER', 'CREATE'];
     /**
      * 
@@ -41,36 +41,23 @@ export class Utilities implements Utilities {
     }
 
 
-    public static getObjectType(definition: string): string {
-
-        const splitDefinition = Utilities.splitDefinitionComment(definition as string);
-
-        if (splitDefinition.definition.toUpperCase().includes(this.typesOfProcedures[0]))
-            return this.typesOfProcedures[0];
-        if (splitDefinition.definition.toUpperCase().includes(this.typesOfProcedures[1]))
-            return this.typesOfProcedures[1];
-        return this.typesOfProcedures[2];
-
-
+    public static getObjectType(content: string, createOrAlter: string): string {
+        content = content.substring(content.indexOf(createOrAlter), content.indexOf(' ', content.indexOf(createOrAlter)+createOrAlter.length+1));
+        
+        return this.typesOfObjects[this.checkStringOfArrayInString(content, this.typesOfObjects)];
     }
 
-    public static getObjectName(content: string, procedureType: string): string {
-
-
-        const split = this.splitDefinitionComment(content);
-
-        let objectName = split.definition.substring(split.definition.toUpperCase().indexOf(procedureType) + procedureType.length, split.definition.length);
-
+    public static getObjectName(content: string, objectType: string): string {
+        let objectName = content.substring(content.indexOf(objectType)+objectType.length+1, content.indexOf(' ', content.indexOf(objectType) + objectType.length + 1));
+        
+        console.log(objectName);
         if (objectName?.includes('.'))
-            objectName = objectName.substring(objectName.lastIndexOf('.') + 1, objectName.length - 1);
+            objectName = objectName.substring(objectName.lastIndexOf('.') + 1, objectName.length);
+        console.log(objectName);
         if (objectName?.includes('[') && objectName?.includes(']'))
-            objectName = objectName.substring(objectName.lastIndexOf('[') + 1, objectName.lastIndexOf(']'));
-
-
-        if (objectName != undefined)
-            return objectName;
-
-        throw new Error('could not find procedure name');
+            objectName = objectName.substring(objectName.lastIndexOf('[') + 1, objectName.indexOf(']'));
+        
+        return objectName;
     }
 
     public async getTokensDescription(content: string): Promise<string[]> {

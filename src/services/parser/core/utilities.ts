@@ -19,7 +19,7 @@ export class Utilities implements Utilities {
      * @param file 
      * @returns 
      */
-    public async FileNameGuard(file: string): Promise<string> {
+    public static FileNameGuard(file: string): string {
         if (file.includes('.'))
             file.substring(0, file.indexOf('.'));
         return file;
@@ -33,7 +33,7 @@ export class Utilities implements Utilities {
             return '';
     }
 
-    public checkIfCarriageReturn(target: string): string {
+    public static checkIfCarriageReturn(target: string): string {
 
         if (target.includes('\r'))
             target = target.substring(0, target.indexOf('\r'));
@@ -42,25 +42,23 @@ export class Utilities implements Utilities {
 
 
     public static getObjectType(content: string, createOrAlter: string): string {
-        content = content.substring(content.indexOf(createOrAlter), content.indexOf(' ', content.indexOf(createOrAlter)+createOrAlter.length+1));
-        
+        content = content.substring(content.indexOf(createOrAlter), content.indexOf(' ', content.indexOf(createOrAlter) + createOrAlter.length + 1));
+
         return this.typesOfObjects[this.checkStringOfArrayInString(content, this.typesOfObjects)];
     }
 
     public static getObjectName(content: string, objectType: string): string {
-        let objectName = content.substring(content.indexOf(objectType)+objectType.length+1, content.indexOf(' ', content.indexOf(objectType) + objectType.length + 1));
-        
-        console.log(objectName);
+        let objectName = content.substring(content.indexOf(objectType) + objectType.length + 1, content.indexOf(' ', content.indexOf(objectType) + objectType.length + 1));
+
         if (objectName?.includes('.'))
             objectName = objectName.substring(objectName.lastIndexOf('.') + 1, objectName.length);
-        console.log(objectName);
         if (objectName?.includes('[') && objectName?.includes(']'))
             objectName = objectName.substring(objectName.lastIndexOf('[') + 1, objectName.indexOf(']'));
-        
+
         return objectName;
     }
 
-    public async getTokensDescription(content: string): Promise<string[]> {
+    public static getTokensDescription(content: string): string[] {
         let tempString = content.substring(content.indexOf(Utilities.tokens[Utilities.tokens.length - 1]));
         tempString = tempString.substring(0, tempString.indexOf('\n') + 1);
         content = content.substring(content.indexOf(Utilities.tokens[0]), content.indexOf(Utilities.tokens[Utilities.tokens.length - 1]) + tempString.length);
@@ -76,7 +74,7 @@ export class Utilities implements Utilities {
         return tokensDescriptionArr;
     }
 
-    public async getParameters(content: string, procedureName: string): Promise<string[]> {
+    public static getParameters(content: string, procedureName: string): string[] {
         //conterrà i singoli parametri
         const parameters: string[] = [];
         //contiene il testo con tutti i parametri
@@ -102,8 +100,8 @@ export class Utilities implements Utilities {
     } {
         let commentedText = '';
         while (content.includes('--') || content.includes('/*')) {
-        
-            commentedText += Utilities.getComment(content)+'\n';
+
+            commentedText += Utilities.getComment(content);
             content = content.replace(Utilities.getComment(content), '');
         }
         content = content.replace(/(\n)+/g, ' ');
@@ -116,13 +114,24 @@ export class Utilities implements Utilities {
     }
 
     public static getComment(content: string): string {
-        if(content.includes('/*') && !content.includes('--'))
-            return content.substring(content.indexOf('/*'), content.indexOf('*/') + 2);
-        if (content.includes('--') && !content.includes('/*'))
-            return content.substring(content.indexOf('--'), content.indexOf('\n', content.indexOf('--')));
-        if (content.indexOf('--') < content.indexOf('/*'))
-            return content.substring(content.indexOf('--'), content.indexOf('\n', content.indexOf('--')));
-        return content.substring(content.indexOf('/*'), content.indexOf('*/') + 2);
+        const indexMulti = content.indexOf('/*');
+        const indexSingle = content.indexOf('--');
+        let index = -1;
+        let eol = '';
+        if (indexMulti == -1) 
+            index = indexSingle;
+        else
+        if (indexSingle == -1)
+            index = indexMulti;
+        else
+            index = Math.min(indexMulti, indexSingle);
+  
+        if (index == indexSingle)
+            eol = '\n';
+        if (index == indexMulti)
+            eol = '*/';
+
+        return content.substring(index, content.indexOf(eol, index) + 2);
 
     }
 
@@ -130,7 +139,7 @@ export class Utilities implements Utilities {
         return this.createOrAlterArr[this.checkStringOfArrayInString(content, this.createOrAlterArr)];
     }
 
-    public static checkStringOfArrayInString(content:string, arr:string[]): number{
+    public static checkStringOfArrayInString(content: string, arr: string[]): number {
         let index = -1;
         let boolGuard = false;
         do {
@@ -140,7 +149,7 @@ export class Utilities implements Utilities {
         return index;
 
     }
-    
+
 }
 
 

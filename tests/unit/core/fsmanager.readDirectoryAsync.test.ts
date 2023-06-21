@@ -32,7 +32,12 @@ describe('FsManager ReadDirectoryAsync', () => {
                     name: 'examples',
                     directory: 'tests/mockup/examples',
                     files: ['StpXImptPdm_Articolo.sql', 'templateProcedureDoc.md'],
-                    children: []
+                    children: [{
+                        name: 'docs',
+                        directory: 'tests/mockup/examples/docs',
+                        files: [],
+                        children:[]
+                    }]
                 },
                 {
                     name: 'testpath',
@@ -48,6 +53,7 @@ describe('FsManager ReadDirectoryAsync', () => {
                 ]
             }
         };
+        
         expect(actual).toEqual(expected);
     });
 
@@ -64,7 +70,12 @@ describe('FsManager ReadDirectoryAsync', () => {
                     name: 'examples',
                     directory: './tests/mockup/examples',
                     files: ['StpXImptPdm_Articolo.sql', 'templateProcedureDoc.md'],
-                    children: []
+                    children: [{
+                        name: 'docs',
+                        directory: './tests/mockup/examples/docs',
+                        files: [],
+                        children: []
+                    }]
                 },
                 {
                     name: 'testpath',

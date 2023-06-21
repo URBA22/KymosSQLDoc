@@ -1,11 +1,12 @@
 import { ICommand } from '../command';
-import { ParserBuilder } from 'src/services';
+import { ParserBuilder } from '../../services';
 import { FsManager, IFsManager } from '../fsmanager/fsmanager';
 import { Root } from '../fsmanager/core/Root';
 import { Directory } from '../fsmanager/core/Directory';
 import { Utilities } from '../../services/parser/core/utilities';
-import fs from 'fs';
-import { InvalidPathError } from 'src/services/guardClauses/errors';
+import fs, { existsSync, mkdir } from 'fs';
+import { InvalidPathError } from '../../services/guardClauses/errors';
+import { StoredProcedureParser } from '../../services/parser/storedProcedureParser';
 
 
 export interface IProgram {
@@ -23,6 +24,7 @@ export class Program implements IProgram {
 
     public async CreateDocFolders(dir: Directory, dest: string) {
         const fsManager = new FsManager();
+
         await fsManager.writeDirectoryAsync(dest, dir.name);
 
         await this.CreateDocumentation(dir, dest + '/' + dir.name);
@@ -64,7 +66,7 @@ export class Program implements IProgram {
 
 
         const source = programOptions.source ?? './';
-        const destination = programOptions.destination ?? './';
+        const destination = programOptions.out ?? './';
 
 
 
@@ -79,6 +81,12 @@ export class Program implements IProgram {
 
 
         const sourcePaths: Root = await this.fsManager.readDirectoryAsync(source);
+
+        if (!existsSync(destination + 'docs /'))
+            await this.fsManager.writeDirectoryAsync(destination, 'docs');
+        await this.CreateDocFolders(sourcePaths.directory, destination + '/docs/');
+
+        
 
 
         // 1. prende argomento -s oppure ./ -> source

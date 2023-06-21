@@ -10,6 +10,7 @@
     "run": "rm -rf ./dist && npx tsc -p tsconfig-build.json && node dist/index.js",
     "run-win": "rd /s /q dist && npx tsc -p tsconfig-build.json && node dist/index.js",
     "build": "rm -rf ./dist && npx tsc -p tsconfig-build.json",
+    "build-win": "rd /s /q dist && npx tsc -p tsconfig-build.json",
     "lint": "eslint . --ext .ts",
     "lint-and-fix": "eslint . --ext .ts --fix",
     "test": "jest"

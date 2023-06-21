@@ -9,6 +9,9 @@ export class StoredProcedureParser implements IParser {
         this.definition = definition;
     }
     public async parseAsync() {
+        this.definition+='#{'+Utilities.getObjectName(this.definition, Utilities.getObjectType(this.definition, Utilities.getCreateOrAlter(this.definition)))+'}\n';
+        const tokens = Utilities.getTokensDescription(this.definition);
+        this.definition+='{'+tokens[0]+'}\n';
 
         return this.definition;
     }

@@ -140,14 +140,20 @@ export class Utilities implements Utilities {
     }
 
     public static getCreateOrAlter(content: string): string {
-        let index=-1;
-        let boolGuard=false;
+        return this.createOrAlterArr[this.checkStringInArray(content, this.createOrAlterArr)];
+    }
+
+    public static checkStringInArray(content:string, arr:string[]): number{
+        let index = -1;
+        let boolGuard = false;
         do {
             index++;
-            boolGuard=content.toUpperCase().includes(this.createOrAlterArr[index]);
+            boolGuard = content.toUpperCase().includes(arr[index]);
         } while (!boolGuard);
-        return this.createOrAlterArr[index];
+        return index;
+
     }
+    
 }
 
 

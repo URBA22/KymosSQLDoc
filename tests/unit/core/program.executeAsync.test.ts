@@ -1,4 +1,5 @@
 import { CommandBuilder, FsManagerBuilder, ProgramBuilder } from 'src/core';
+import fs, { rmSync }from 'fs';
 
 describe('ExecuteAsync', () => {
 
@@ -35,7 +36,7 @@ describe('ExecuteAsync', () => {
             'C:\\Program Files\\nodejs\\node.exe',
             'C:\\Users\\HP\\Desktop\\SCUOLA\\pcto\\KymosSQLDoc\\dist\\index.js',
             '-s',
-            './tests/mockup/examples/',
+            './tests/mockup/examples',
             '-o',
             './tests/mockup/examples'
         ]).catch((error: Error) => {
@@ -45,5 +46,9 @@ describe('ExecuteAsync', () => {
     });
 
 
+    afterAll(() => {
+
+        rmSync('tests/mockup/examples/docs/examples');
+    });
 
 });

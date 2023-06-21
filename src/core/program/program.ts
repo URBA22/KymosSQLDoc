@@ -84,6 +84,7 @@ export class Program implements IProgram {
 
         if (!existsSync(destination + 'docs /'))
             await this.fsManager.writeDirectoryAsync(destination, 'docs');
+            
         await this.CreateDocFolders(sourcePaths.directory, destination + '/docs/');
 
         

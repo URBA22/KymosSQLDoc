@@ -137,11 +137,13 @@ export class Utilities implements Utilities {
     } {
         //TODO: implementa metodo
         let commentedText = '';
-        while (content.includes('/**') || content.includes('--') || content.includes('/*')) {
-
-            commentedText += Utilities.getComment(content);
+        while (content.includes('--') || content.includes('/*')) {
+        
+            commentedText += Utilities.getComment(content)+'\n';
             content = content.replace(Utilities.getComment(content), '');
         }
+        content.replace('\n', ' ');
+        content.replace(/[ ]+/, ' ');
         return {
             definition: content,
             comments: commentedText,
@@ -151,7 +153,7 @@ export class Utilities implements Utilities {
     public static getComment(content: string): string {
         if (content.includes('/*') && content.indexOf('/*') < content.indexOf('--'))
             return content.substring(content.indexOf('/*'), content.indexOf('*/') + 2);
-        return content.substring(content.indexOf('--'), content.indexOf('\n') + 2);
+        return content.substring(content.indexOf('--'), content.indexOf('\n', content.indexOf('--')));
 
 
     }

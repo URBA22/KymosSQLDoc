@@ -10,9 +10,9 @@ describe('FsManager ReadFileAsync', () => {
 
 
     test('Should work fine', async () => {
-        const split= Utilities.splitDefinitionComment(await fsManager.readFileAsync('tests/mockup/examples/','StpXImptPdm_Articolo.sql'));
+        const split = Utilities.splitDefinitionComment(await fsManager.readFileAsync('tests/mockup/examples','StpXImptPdm_Articolo.sql'));
         
-        
+        console.log(split.definition);
         console.log(split.comments);
         expect('').toEqual('');
     });

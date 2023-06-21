@@ -142,8 +142,9 @@ export class Utilities implements Utilities {
             commentedText += Utilities.getComment(content)+'\n';
             content = content.replace(Utilities.getComment(content), '');
         }
-        content.replace('\n', ' ');
-        content.replace(/[ ]+/, ' ');
+        content = content.replace(/(\n)+/g, ' ');
+        content = content.replace(/[ ]+/g, ' ');
+
         return {
             definition: content,
             comments: commentedText,
@@ -151,10 +152,13 @@ export class Utilities implements Utilities {
     }
 
     public static getComment(content: string): string {
-        if (content.includes('/*') && content.indexOf('/*') < content.indexOf('--'))
+        if(content.includes('/*') && !content.includes('--'))
             return content.substring(content.indexOf('/*'), content.indexOf('*/') + 2);
-        return content.substring(content.indexOf('--'), content.indexOf('\n', content.indexOf('--')));
-
+        if (content.includes('--') && !content.includes('/*'))
+            return content.substring(content.indexOf('--'), content.indexOf('\n', content.indexOf('--')));
+        if (content.indexOf('--') < content.indexOf('/*'))
+            return content.substring(content.indexOf('--'), content.indexOf('\n', content.indexOf('--')));
+        return content.substring(content.indexOf('/*'), content.indexOf('*/') + 2);
 
     }
 

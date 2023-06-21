@@ -13,6 +13,7 @@ export class Utilities implements Utilities {
 
     public static tokens = ['@summary', '@author', '@custom', '@standard', '@version'];
     public static typesOfProcedures = ['PROCEDURE', 'TRIGGER', 'VIEW', 'FUNCTION', 'TABLE'];
+    public static createOrAlterArr = ['CREATE OR ALTER', 'ALTER', 'CREATE'];
     /**
      * 
      * @param file 
@@ -24,29 +25,6 @@ export class Utilities implements Utilities {
         return file;
     }
 
-    /*public static getFullProcedureText(content: string) {
-
-        let regEx = new RegExp('CREATE([ ]*[\\n]*)*OR([ ]*[\\n]*)*ALTER([ ]*[\\n]*)*[A-Z]*([ ]*[\\n]*)*(\\[*[A-Z]*.*\\]*)*');
-        let regExArr = regEx.exec(content.toUpperCase());
-        let res = regExArr?.toString();
-        if (res != undefined)
-            return res;
-
-        regEx = new RegExp('ALTER([ ]*[\\n]*)*[A-Z]*([ ]*[\\n]*)*(\\[*[A-Z]*.*\\]*)*');
-        regExArr = regEx.exec(content.toUpperCase());
-        res = regExArr?.toString();
-        if (res != undefined)
-            return res;
-
-        regEx = new RegExp('CREATE([ ]*[\\n]*)*[A-Z]*([ ]*[\\n]*)*(\\[*[A-Z]*.*\\]*)*');
-        regExArr = regEx.exec(content.toUpperCase());
-        res = regExArr?.toString();
-        if (res != undefined)
-            return res;
-
-
-        throw new Error('couldnt find type');
-    }*/
 
     public static checkIfType(content: string | undefined, target: string): string {
         if (content?.toUpperCase().includes(target.toUpperCase()))
@@ -135,7 +113,6 @@ export class Utilities implements Utilities {
         comments: string;
 
     } {
-        //TODO: implementa metodo
         let commentedText = '';
         while (content.includes('--') || content.includes('/*')) {
         
@@ -162,6 +139,15 @@ export class Utilities implements Utilities {
 
     }
 
+    public static getCreateOrAlter(content: string): string {
+        let index=-1;
+        let boolGuard=false;
+        do {
+            index++;
+            boolGuard=content.toUpperCase().includes(this.createOrAlterArr[index]);
+        } while (!boolGuard);
+        return this.createOrAlterArr[index];
+    }
 }
 
 

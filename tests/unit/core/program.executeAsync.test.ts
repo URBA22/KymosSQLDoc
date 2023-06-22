@@ -1,5 +1,5 @@
 import { CommandBuilder, FsManagerBuilder, ProgramBuilder } from 'src/core';
-import fs, { rmSync }from 'fs';
+import fs, { rmSync, unlinkSync }from 'fs';
 
 describe('ExecuteAsync', () => {
 
@@ -28,7 +28,9 @@ describe('ExecuteAsync', () => {
         .withFsManager(fsManager)
         .build();
 
-
+    beforeAll(() => {
+        fsManager.writeDirectoryAsync('./tests/','examplesDocumentation');
+    });
 
 
     test('Should work fine', async () => {
@@ -38,7 +40,7 @@ describe('ExecuteAsync', () => {
             '-s',
             './tests/mockup/examples',
             '-o',
-            './tests/mockup/examples'
+            './tests/examplesDocumentation'
         ]).catch((error: Error) => {
             console.log(error.message);
         });
@@ -48,7 +50,7 @@ describe('ExecuteAsync', () => {
 
     afterAll(() => {
 
-        rmSync('tests/mockup/examples/docs/examples');
+        fs.rmSync('tests/examplesDocumentation', { recursive: true, force: true});
     });
 
 });

@@ -32,12 +32,7 @@ describe('FsManager ReadDirectoryAsync', () => {
                     name: 'examples',
                     directory: 'tests/mockup/examples',
                     files: ['StpXImptPdm_Articolo.sql', 'templateProcedureDoc.md'],
-                    children: [{
-                        name: 'docs',
-                        directory: 'tests/mockup/examples/docs',
-                        files: [],
-                        children:[]
-                    }]
+                    children: []
                 },
                 {
                     name: 'testpath',
@@ -70,12 +65,7 @@ describe('FsManager ReadDirectoryAsync', () => {
                     name: 'examples',
                     directory: './tests/mockup/examples',
                     files: ['StpXImptPdm_Articolo.sql', 'templateProcedureDoc.md'],
-                    children: [{
-                        name: 'docs',
-                        directory: './tests/mockup/examples/docs',
-                        files: [],
-                        children: []
-                    }]
+                    children: []
                 },
                 {
                     name: 'testpath',

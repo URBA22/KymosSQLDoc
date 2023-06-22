@@ -73,23 +73,30 @@ export class Utilities implements Utilities {
 
         return tokensDescriptionArr;
     }
-
+    public static getWithForAs(content: string): number{
+        let index = content.toUpperCase().indexOf(' AS ');
+        const indexWith = content.toUpperCase().indexOf(' WITH ');
+        const indexFor = content.toUpperCase().indexOf(' FOR ');
+        if(indexWith>=0 && indexWith<index)
+            index=indexWith;
+        if (indexFor >= 0 && indexFor < index)
+            index = indexFor;
+        return index;
+    }
+    /**
+     * 
+     * @param content String where the parameters are searched
+     * @param procedureName String which represent the name of the procedure
+     * @returns Array of strings that contains all found parameters with their description
+     */
     public static getParameters(content: string, procedureName: string): string[] {
-        //conterrà i singoli parametri
-        const parameters: string[] = [];
-        //contiene il testo con tutti i parametri
-        let fullText: string = content.substring(content.indexOf(procedureName) + procedureName.length);
-
-        fullText = fullText.substring(fullText.indexOf('(') + 1, fullText.indexOf(')'));
-
-        while (fullText.includes('@')) {
-            fullText = fullText.substring(fullText.indexOf('@') + 1, fullText.length);
-            parameters.push(fullText.substring(0, fullText.indexOf('@') - 1));
-        }
-
-        console.log(parameters);
-
-
+        let parameters: string[] = [];
+        content = content.substring(content.indexOf(procedureName)+procedureName.length+1, this.getWithForAs(content)).trim();
+        if(content[0] == '(')
+            content = content.substring(1, content.length-1).trim();
+        if(!content.includes('@'))
+            return parameters;
+        parameters = content.split(/,[ ]*@/);
         return parameters;
     }
 
@@ -104,7 +111,7 @@ export class Utilities implements Utilities {
             commentedText += Utilities.getComment(content);
             content = content.replace(Utilities.getComment(content), '');
         }
-        content = content.replace(/(\n)+/g, ' ');
+        content = content.replace(/(\t|\n|\r)+/g, ' ');
         content = content.replace(/[ ]+/g, ' ');
 
         return {

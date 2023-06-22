@@ -22,17 +22,17 @@ export class Program implements IProgram {
         this.fsManager = fsManager;
     }
 
-    public async CreateDocFolders(dir: Directory, dest: string) {
+    public async createDocFolders(dir: Directory, dest: string) {
         const fsManager = new FsManager();
 
         await fsManager.writeDirectoryAsync(dest, dir.name);
 
-        await this.CreateDocumentation(dir, dest + '/' + dir.name);
+        await this.createDocumentation(dir, dest + '/' + dir.name);
 
         const createDocFolderThreads: Promise<void>[] = [];
 
         for (const child of dir.children)
-            createDocFolderThreads.push(this.CreateDocFolders(child, dest + '/' + dir.name));
+            createDocFolderThreads.push(this.createDocFolders(child, dest + '/' + dir.name));
         Promise.all(createDocFolderThreads);
     }
 
@@ -42,7 +42,8 @@ export class Program implements IProgram {
      * @param dest 
      */
     //crea il file di documentazionenel percorso passato come dest(destinazione)
-    public async CreateDocumentation(dir: Directory, dest: string): Promise<void> {
+    public async createDocumentation(dir: Directory, dest: string): Promise<void> {
+        dir.files = dir.files.filter(file => file.substring(file.indexOf('.')) == '.sql');
         for (const file of dir.files) {
             const content = await this.fsManager.readFileAsync(dir.directory, file);
             const parser = ParserBuilder
@@ -50,11 +51,10 @@ export class Program implements IProgram {
                 .withDefinition(content)
                 .build();
             const parsedDocumentation = await parser?.parseAsync();
-            this.fsManager.writeFileAsync(dest + '/', file + '.md', parsedDocumentation as string);
+            this.fsManager.writeFileAsync(dest + '/', file.substring(0,file.indexOf('.sql')) + '.md', parsedDocumentation as string);
         }
 
     }
-
 
 
 
@@ -85,7 +85,7 @@ export class Program implements IProgram {
         if (!existsSync(destination + 'docs /'))
             await this.fsManager.writeDirectoryAsync(destination, 'docs');
             
-        await this.CreateDocFolders(sourcePaths.directory, destination + '/docs/');
+        await this.createDocFolders(sourcePaths.directory, destination + '/docs/');
 
         
 

@@ -118,7 +118,7 @@ export class FsManager implements IFsManager {
      * @param name File name
      * @returns File content with utf-8 encoded
      */
-    async readFileAsync(path: string, name: string): Promise<string> {
+    public async readFileAsync(path: string, name: string): Promise<string> {
         path = await FsManager.mergePath(this.absolutePath, path);
 
         Guard.Against.InvalidPath(path);

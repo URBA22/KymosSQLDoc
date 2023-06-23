@@ -14,7 +14,6 @@ export class StoredProcedureParser implements IParser {
 
         //obtain and write tokens
         const tokens = Utilities.getTokensDescription(split.comments);
-        console.log(tokens);
         newDefinition += tokens[0].trim() + '\n';
         newDefinition += '- Autore : ' + tokens[1].trim() + '\n';
         newDefinition += '- Custom : ' + tokens[2].trim() + '\n';

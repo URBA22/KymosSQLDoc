@@ -39,7 +39,7 @@ export default class ParserBuilder implements IParserBuilder_Step0, IParserBuild
         switch(typeOfObject){
 
         case 'PROCEDURE':
-            return new StoredProcedureParser(splitDefinition.definition as string);
+            return new StoredProcedureParser(this.definition as string);
             break;
 
         case 'TRIGGER':

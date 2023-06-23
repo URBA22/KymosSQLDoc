@@ -8,7 +8,8 @@ GO
  * @author simone
  * @custom YES
  * @standard NO
- * @version 23.04.17 Creazione
+ * @version sim 230417 Creazione
+ * @version dav 230517 Aggiornamento
  **/
 CREATE OR ALTER PROCEDURE [dbo].[StpXImptPdm_Articolo] (
 	@IdArticolo NVARCHAR(50) = NULL OUT,

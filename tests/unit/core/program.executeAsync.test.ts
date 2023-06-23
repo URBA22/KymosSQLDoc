@@ -46,11 +46,11 @@ describe('ExecuteAsync', () => {
         });
         expect('').toEqual('');
     });
-
+ 
 
     afterAll(() => {
 
-        fs.rmSync('tests/examplesDocumentation', { recursive: true, force: true});
+        fs.rmSync('tests/examplesDocumentation', { recursive: true, force: true}); 
     });
 
 });

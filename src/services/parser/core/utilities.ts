@@ -58,27 +58,35 @@ export class Utilities implements Utilities {
         return objectName;
     }
 
+
     public static getTokensDescription(content: string): string[] {
-        let tempString = content.substring(content.indexOf(Utilities.tokens[Utilities.tokens.length - 1]));
+
+        //rifai basandoti su commenti
+        let tempString = content.substring(content.lastIndexOf(Utilities.tokens[Utilities.tokens.length - 1]));
         tempString = tempString.substring(0, tempString.indexOf('\n') + 1);
-        content = content.substring(content.indexOf(Utilities.tokens[0]), content.indexOf(Utilities.tokens[Utilities.tokens.length - 1]) + tempString.length);
+        content = content.substring(content.indexOf(Utilities.tokens[0]), content.lastIndexOf(Utilities.tokens[Utilities.tokens.length - 1]) + tempString.length);
         const tokensDescriptionArr: string[] = [];
 
-        for (let i = 0; i < Utilities.tokens.length - 1; i++) {
+
+        for (let i = 0; i < this.tokens.length - 1; i++) {
             tokensDescriptionArr.push(this.checkIfCarriageReturn(content.substring(content.indexOf(Utilities.tokens[i]) + Utilities.tokens[i].length, content.indexOf('\n'))));
 
             content = content.substring(content.indexOf(Utilities.tokens[i + 1]));
         }
-        tokensDescriptionArr.push(this.checkIfCarriageReturn(tempString.substring(tempString.indexOf(Utilities.tokens[Utilities.tokens.length - 1]) + Utilities.tokens[Utilities.tokens.length - 1].length, tempString.indexOf('\n'))));
 
+        for (let i = 0; i < content.split('@version').length - 1; i++) {
+            tokensDescriptionArr.push(content.substring(0, content.indexOf('@version', content.indexOf('@version') + 8)));
+            content = content.substring(content.indexOf('@version', content.indexOf('@version') + 8));
+        }
+        tokensDescriptionArr.push(content);
         return tokensDescriptionArr;
     }
-    public static getWithForAs(content: string): number{
+    public static getWithForAs(content: string): number {
         let index = content.toUpperCase().indexOf(' AS ');
         const indexWith = content.toUpperCase().indexOf(' WITH ');
         const indexFor = content.toUpperCase().indexOf(' FOR ');
-        if(indexWith>=0 && indexWith<index)
-            index=indexWith;
+        if (indexWith >= 0 && indexWith < index)
+            index = indexWith;
         if (indexFor >= 0 && indexFor < index)
             index = indexFor;
         return index;
@@ -91,12 +99,14 @@ export class Utilities implements Utilities {
      */
     public static getParameters(content: string, procedureName: string): string[] {
         let parameters: string[] = [];
-        content = content.substring(content.indexOf(procedureName)+procedureName.length+1, this.getWithForAs(content)).trim();
-        if(content[0] == '(')
-            content = content.substring(1, content.length-1).trim();
-        if(!content.includes('@'))
+        content = content.substring(content.indexOf(procedureName) + procedureName.length + 1, this.getWithForAs(content)).trim();
+        if (content[0] == '(')
+            content = content.substring(1, content.length - 1).trim();
+        if (!content.includes('@'))
             return parameters;
-        parameters = content.split(/,[ ]*@/);
+
+        content = content.replace('@', '\n@');
+        parameters = content.split(/,[[ ]|[\n]]+/);
         return parameters;
     }
 
@@ -125,14 +135,14 @@ export class Utilities implements Utilities {
         const indexSingle = content.indexOf('--');
         let index = -1;
         let eol = '';
-        if (indexMulti == -1) 
+        if (indexMulti == -1)
             index = indexSingle;
         else
-        if (indexSingle == -1)
-            index = indexMulti;
-        else
-            index = Math.min(indexMulti, indexSingle);
-  
+            if (indexSingle == -1)
+                index = indexMulti;
+            else
+                index = Math.min(indexMulti, indexSingle);
+
         if (index == indexSingle)
             eol = '\n';
         if (index == indexMulti)
@@ -155,6 +165,35 @@ export class Utilities implements Utilities {
         } while (!boolGuard);
         return index;
 
+    }
+
+    public static getParameterType(param: string): string {
+        param = param.substring(param.indexOf(' '));
+        if (param.includes('=')) {
+            param = param.substring(0, param.indexOf('='));
+        }
+        param.trim();
+        if (!param.includes(' '))
+            return param;
+        return param.substring(param.indexOf(' ') + 1);
+    }
+
+    public static getParameterOutPut(param: string): string {
+        if (!param.includes('=')) {
+            return 'NO | YES';
+        }
+        param = param.substring(param.indexOf('=') + 1);
+        let res = '';
+        if (param.toUpperCase().includes('NULL'))
+            res = 'YES';
+        else
+            res = 'NO';
+
+        if (param.toUpperCase().includes('OUT') || param.toUpperCase().includes('OUTPUT') || param.toUpperCase().includes('READONLY'))
+            res += '| YES';
+        else
+            res += '| NO';
+        return res;
     }
 
 }

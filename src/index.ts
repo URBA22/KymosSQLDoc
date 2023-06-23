@@ -27,4 +27,6 @@ const program = ProgramBuilder
     .build();
 
 
-program.executeAsync(process.argv);
+program.executeAsync(process.argv).catch((error: Error)=>{
+    console.log(error.message);
+});

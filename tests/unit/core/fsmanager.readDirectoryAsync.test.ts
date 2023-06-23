@@ -48,6 +48,7 @@ describe('FsManager ReadDirectoryAsync', () => {
                 ]
             }
         };
+        
         expect(actual).toEqual(expected);
     });
 

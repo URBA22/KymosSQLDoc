@@ -1,11 +1,12 @@
 import { ICommand } from '../command';
-import { ParserBuilder } from 'src/services';
+import { ParserBuilder } from '../../services';
 import { FsManager, IFsManager } from '../fsmanager/fsmanager';
 import { Root } from '../fsmanager/core/Root';
 import { Directory } from '../fsmanager/core/Directory';
-import { Documentation } from '../../services/parser/core/Documentation';
-import fs from 'fs';
-import { InvalidPathError } from 'src/services/guardClauses/errors';
+import { Utilities } from '../../services/parser/core/utilities';
+import fs, { existsSync, mkdir } from 'fs';
+import { InvalidPathError } from '../../services/guardClauses/errors';
+import { StoredProcedureParser } from '../../services/parser/storedProcedureParser';
 
 
 export interface IProgram {
@@ -21,16 +22,17 @@ export class Program implements IProgram {
         this.fsManager = fsManager;
     }
 
-    public async CreateDocFolders(dir: Directory, dest: string){
+    public async createDocFolders(dir: Directory, dest: string) {
         const fsManager = new FsManager();
+
         await fsManager.writeDirectoryAsync(dest, dir.name);
 
-        await this.CreateDocumentation(dir,dest+'/'+dir.name);
+        await this.createDocumentation(dir, dest + '/' + dir.name);
 
-        const createDocFolderThreads: Promise<void>[]=[];
+        const createDocFolderThreads: Promise<void>[] = [];
 
-        for(const child of dir.children)
-            createDocFolderThreads.push(this.CreateDocFolders(child, dest + '/' + dir.name));
+        for (const child of dir.children)
+            createDocFolderThreads.push(this.createDocFolders(child, dest + '/' + dir.name));
         Promise.all(createDocFolderThreads);
     }
 
@@ -40,43 +42,18 @@ export class Program implements IProgram {
      * @param dest 
      */
     //crea il file di documentazionenel percorso passato come dest(destinazione)
-    public async CreateDocumentation(dir: Directory, dest: string): Promise<void> {
+    public async createDocumentation(dir: Directory, dest: string): Promise<void> {
+        dir.files = dir.files.filter(file => file.substring(file.indexOf('.')) == '.sql');
         for (const file of dir.files) {
             const content = await this.fsManager.readFileAsync(dir.directory, file);
             const parser = ParserBuilder
                 .createParser()
                 .withDefinition(content)
                 .build();
-            const parsedDocumentation = await parser.parseAsync();
-            this.fsManager.writeFileAsync(dest + '/', file + '.md', content);
+            const parsedDocumentation = await parser?.parseAsync();
+            this.fsManager.writeFileAsync(dest + '/', file.substring(0,file.indexOf('.sql')) + '.md', parsedDocumentation as string);
         }
 
-    }
-
-    /**
- * 
- * @param path 
- * @param file 
- * @returns
- */
-    public async ParsingFile(path:string, file: string): Promise<string> {
-        const doc = new Documentation();
-        //conterrà il contenuto del file
-        const content = await this.fsManager.readFileAsync(path,file);
-        //array che contiene i parametri fissi da controllare
-        const titlesArr: string[] = ['@summary', '@author', '@custom', '@standard', '@version'];
-        //descrizione delle @
-        const titlesDescriptionArr = await doc.titlesDescription(content, titlesArr);
-
-        //nome procedura
-        const procedureName = await doc.getProcedureName(content);
-
-        //contiene i parametri
-        const parameters = await doc.getParameters(content, procedureName);
-
-        
-
-        return content;
     }
 
 
@@ -89,13 +66,13 @@ export class Program implements IProgram {
 
 
         const source = programOptions.source ?? './';
-        const destination = programOptions.destination ?? './';
-
-        
+        const destination = programOptions.out ?? './';
 
 
-        
-        if (!fs.existsSync(source) || !fs.lstatSync(source).isDirectory()){
+
+
+
+        if (!fs.existsSync(source) || !fs.lstatSync(source).isDirectory()) {
             throw new InvalidPathError(source);
         }
         if (!fs.existsSync(destination) && !fs.lstatSync(destination).isDirectory()) {
@@ -104,6 +81,13 @@ export class Program implements IProgram {
 
 
         const sourcePaths: Root = await this.fsManager.readDirectoryAsync(source);
+
+        if (!existsSync(destination + 'docs /'))
+            await this.fsManager.writeDirectoryAsync(destination, 'docs');
+            
+        await this.createDocFolders(sourcePaths.directory, destination + '/docs/');
+
+        
 
 
         // 1. prende argomento -s oppure ./ -> source

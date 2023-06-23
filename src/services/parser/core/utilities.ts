@@ -58,7 +58,14 @@ export class Utilities implements Utilities {
         return objectName;
     }
 
-
+    public static getVersionDescription(splittedVersion: string[]): string[]{
+        const versionDescription: string[]= [];
+        versionDescription[0] = splittedVersion[1];
+        versionDescription[1] = splittedVersion[2];
+        const temp = splittedVersion.slice(3);
+        versionDescription[2] = temp.join(' ');
+        return versionDescription;
+    }
     public static getTokensDescription(content: string): string[] {
 
         //rifai basandoti su commenti
@@ -75,8 +82,8 @@ export class Utilities implements Utilities {
         }
 
         for (let i = 0; i < content.split('@version').length - 1; i++) {
-            tokensDescriptionArr.push(content.substring(0, content.indexOf('@version', content.indexOf('@version') + 8)));
-            content = content.substring(content.indexOf('@version', content.indexOf('@version') + 8));
+            tokensDescriptionArr.push(content.substring(0, content.indexOf('\n')));
+            content = content.substring(content.indexOf('@version', content.indexOf('\n')));
         }
         tokensDescriptionArr.push(content);
         return tokensDescriptionArr;
@@ -105,8 +112,10 @@ export class Utilities implements Utilities {
         if (!content.includes('@'))
             return parameters;
 
-        content = content.replace('@', '\n@');
-        parameters = content.split(/,[[ ]|[\n]]+/);
+        parameters = content.split(/,[ ]*@/);
+        for(let i=1; i<parameters.length; i++){
+            parameters[i] = '@'+parameters[i];
+        }
         return parameters;
     }
 
@@ -138,10 +147,10 @@ export class Utilities implements Utilities {
         if (indexMulti == -1)
             index = indexSingle;
         else
-            if (indexSingle == -1)
-                index = indexMulti;
-            else
-                index = Math.min(indexMulti, indexSingle);
+        if (indexSingle == -1)
+            index = indexMulti;
+        else
+            index = Math.min(indexMulti, indexSingle);
 
         if (index == indexSingle)
             eol = '\n';

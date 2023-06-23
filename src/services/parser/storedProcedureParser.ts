@@ -16,22 +16,23 @@ export class StoredProcedureParser implements IParser {
         const tokens = Utilities.getTokensDescription(split.comments);
         console.log(tokens);
         newDefinition += tokens[0].trim() + '\n';
-        newDefinition += '- autore:' + tokens[1].trim() + '\n';
-        newDefinition += '- custom:' + tokens[2].trim() + '\n';
-        newDefinition += '- standard:' + tokens[3].trim() + '\n';
+        newDefinition += '- Autore : ' + tokens[1].trim() + '\n';
+        newDefinition += '- Custom : ' + tokens[2].trim() + '\n';
+        newDefinition += '- Standard : ' + tokens[3].trim() + '\n';
 
         newDefinition += '\n## Versioni\nAutore | Versione | Descrizione\n--- | --- | --- \n';
         for (let i = 4; i < tokens.length; i++) {
-            tokens[i] = tokens[i].trim();
-            tokens[i] = tokens[i].replace('[ ]+', ' ');
-
-            newDefinition += tokens[i].substring(0, tokens[i].indexOf(' ')) + ' | ';
-            newDefinition += tokens[i].substring(tokens[i].indexOf(' '), tokens[i].indexOf(' ', tokens[i].indexOf(' ') + 1)) + ' | ';
-            newDefinition += tokens[i].substring(tokens[i].lastIndexOf(' ')) + '\n';
+            let tokensTemp: string[]= [];
+            tokens[i] = tokens[i].replace(/[ ]+/g, ' ');
+            tokens[i] = tokens[i].replace(/(\t|\n|\r)+/g, '');
+            tokensTemp = Utilities.getVersionDescription(tokens[i].split(' '));
+            newDefinition += tokensTemp[0] + ' | ';
+            newDefinition += tokensTemp[1] + ' | ';
+            newDefinition += tokensTemp[2] + '\n';
         }
 
         const parameters = Utilities.getParameters(split.definition, Utilities.getObjectName(this.definition, Utilities.getObjectType(this.definition, Utilities.getCreateOrAlter(this.definition))));
-        parameters[0] = parameters[0].substring(2);
+        
         newDefinition += '\n## Parametri\nNome | Tipo | Null | Output | Descrizione\n--- | --- | --- | --- | --- \n';
         for (const param of parameters) {
             newDefinition += param.substring(0, param.indexOf(' ')) + ' | ';

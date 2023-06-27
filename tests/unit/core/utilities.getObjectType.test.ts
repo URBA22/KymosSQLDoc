@@ -1,4 +1,3 @@
-import { copyFileSync } from 'fs';
 import { FsManager } from 'src/core/fsmanager/fsmanager';
 import { Utilities } from 'src/services/parser/core/utilities';
 

@@ -14,7 +14,7 @@
     "lint": "eslint . --ext .ts",
     "lint-and-fix": "eslint . --ext .ts --fix",
     "test": "jest",
-    "single-test": "npm test -- -t=executeAsync"
+    "single-test": "npm test -- -t=execute"
   },
   "repository": {
     "type": "git",

@@ -165,10 +165,10 @@ export class Utilities implements Utilities {
         if (indexMulti == -1)
             index = indexSingle;
         else
-            if (indexSingle == -1)
-                index = indexMulti;
-            else
-                index = Math.min(indexMulti, indexSingle);
+        if (indexSingle == -1)
+            index = indexMulti;
+        else
+            index = Math.min(indexMulti, indexSingle);
 
         if (index == indexSingle)
             eol = '\n';
@@ -240,6 +240,79 @@ export class Utilities implements Utilities {
         else
             res += '| NO';
         return res;
+    }
+
+    /**
+     * 
+     * @param content is made of comments
+     * @returns string array with states steps and whiles or ifs
+     */
+    public static getProcedureContent(content: string): {
+        outOfStateContent:string[],
+        inStateContent:string[]
+    } {
+
+        let outOfStateContent = content;
+        let tempContent = '';
+        let inStateContent = '';
+
+
+        while (outOfStateContent.toUpperCase().includes('@STATE')) {
+            tempContent = outOfStateContent.substring(outOfStateContent.toUpperCase().indexOf('@STATE'), outOfStateContent.toUpperCase().indexOf('\n', outOfStateContent.toUpperCase().indexOf('@ENDSTATE')) + 1);
+            outOfStateContent = outOfStateContent.replace(tempContent, '');
+            inStateContent += tempContent;
+
+        }
+        console.log(inStateContent);
+        const inStateContentArr = this.getProcedureContentWhileCycle(inStateContent);
+        const outOfStateContentArr = this.getProcedureContentWhileCycle(outOfStateContent);
+
+        
+
+        return {
+            outOfStateContent: outOfStateContentArr,
+            inStateContent: inStateContentArr
+        };
+    }
+
+    public static getProcedureFirstIndex(content: string): number {
+        content = content.toUpperCase();
+        let index = content.length;
+
+        if (content.includes('@STEP'))
+            index = Math.min(index, content.indexOf('@STEP'));
+        if (content.includes('@IF'))
+            index = Math.min(index, content.indexOf('@IF'));
+        if (content.includes('@SECTION'))
+            index = Math.min(index, content.indexOf('@SECTION'));
+        if (content.includes('@WHILE'))
+            index = Math.min(index, content.indexOf('@WHILE'));
+        if (content.includes('@STATE'))
+            index = Math.min(index, content.indexOf('@STATE'));
+        if (content.includes('@ENDSTATE'))
+            index = Math.min(index, content.indexOf('@ENDSTATE'));
+        if (content.includes('@ENDWHILE'))
+            index = Math.min(index, content.indexOf('@ENDWHILE'));
+        if (content.includes('@ENDSECTION'))
+            index = Math.min(index, content.indexOf('@ENDSECTION'));
+        if (content.includes('@ENDIF'))
+            index = Math.min(index, content.indexOf('@ENDIF'));
+
+
+        return index;
+    }
+
+    public static getProcedureContentWhileCycle(content: string): string[] {
+        const contentArr: string[] = [];
+        while (this.getProcedureFirstIndex(content) != content.length) {
+            const upperCaseContent = content.toUpperCase();
+            const index = this.getProcedureFirstIndex(upperCaseContent);
+            const arrVal = upperCaseContent.substring(index, upperCaseContent.indexOf(' ', index) + 1) + content.substring(content.indexOf(' ', index+1), content.indexOf('\n', index));
+            contentArr.push((arrVal.replace(/((\t)|(\n)|(\r)|[ ]|(-))+/g, ' ')).trim());
+            content = content.substring(content.indexOf('\n', index) + 1);
+        }
+        
+        return contentArr;
     }
 
 }

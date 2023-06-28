@@ -1,7 +1,7 @@
 import { IParser } from './parser';
 import { Utilities } from './core/utilities';
 import { setPriority } from 'os';
-
+import { StoredProcedureParserGuard } from './core/storedProcedureParserGuards';
 export class StoredProcedureParser implements IParser {
     private definition: string;
     private static index: number[] = [0];
@@ -16,8 +16,17 @@ export class StoredProcedureParser implements IParser {
 
 
     public async parseAsync() {
+
+        
+
         //constant that contains both commented part and non-commented part of definition
         const split = Utilities.splitDefinitionComment(this.definition);
+
+        StoredProcedureParserGuard.Guard.stateGuard(split.comments);
+        StoredProcedureParserGuard.Guard.ifGuard(split.comments);
+        StoredProcedureParserGuard.Guard.sectionGuard(split.comments);
+        StoredProcedureParserGuard.Guard.whileGuard(split.comments);
+
         //writes the name of the procedure 
         let newDefinition = '# ' + Utilities.getObjectName(split.definition, Utilities.getObjectType(this.definition, Utilities.getCreateOrAlter(this.definition))) + '\n';
 
@@ -114,7 +123,7 @@ export class StoredProcedureParser implements IParser {
             return this.getTabs() + format + 'IF ' + procedureStep.substring(procedureStep.indexOf(' ')) + '\n';
         }
 
-        
+
 
         if (procedureStep.includes('@ENDSECTION')) {
             this.index.pop();
@@ -129,7 +138,7 @@ export class StoredProcedureParser implements IParser {
             return '<details>\n' + this.getTabs() + '<summary>' + (procedureStep.substring(procedureStep.indexOf(' '))).trim() + '</summary>\n\n';
         }
 
-        
+
 
         if (procedureStep.includes('@STATE')) {
             this.index = [0];
@@ -139,7 +148,7 @@ export class StoredProcedureParser implements IParser {
             return '\n### Stato ' + number + '\n' + description + '\n\n';
         }
 
-        
+
 
         return formattedString;
     }

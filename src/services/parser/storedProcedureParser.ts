@@ -17,12 +17,15 @@ export class StoredProcedureParser implements IParser {
 
     public async parseAsync() {
 
-        
+
 
         //constant that contains both commented part and non-commented part of definition
         const split = Utilities.splitDefinitionComment(this.definition);
 
+        const content = split.comments.toUpperCase().replace(/((@STEP)|(\n)|(\t)|(\r)|[ ]|-)+/g, ' ');
+
         StoredProcedureParserGuard.Guard.stateGuard(split.comments);
+        StoredProcedureParserGuard.Guard.checkIfWrittenCorrectly(content, []);
         StoredProcedureParserGuard.Guard.ifGuard(split.comments);
         StoredProcedureParserGuard.Guard.sectionGuard(split.comments);
         StoredProcedureParserGuard.Guard.whileGuard(split.comments);
@@ -75,7 +78,6 @@ export class StoredProcedureParser implements IParser {
         }
 
 
-        const prova = inAndOutOfState.inStateContent.join('\n');
         return newDefinition;
     }
 
@@ -101,10 +103,10 @@ export class StoredProcedureParser implements IParser {
 
         if (procedureStep.includes('@WHILE')) {
             this.index[this.indexArrDepth]++;
-            this.index.push(0);
             this.indexArrDepth++;
             const format = this.index.join('.');
-            return this.getTabs() + format + 'WHILE ' + (procedureStep.substring(procedureStep.indexOf(' '))).trim() + '\n';
+            this.index.push(0);
+            return this.getTabs() + format + ' WHILE ' + (procedureStep.substring(procedureStep.indexOf(' '))).trim() + '\n';
         }
 
 
@@ -117,10 +119,10 @@ export class StoredProcedureParser implements IParser {
 
         if (procedureStep.includes('@IF')) {
             this.index[this.indexArrDepth]++;
-            this.index.push(0);
             this.indexArrDepth++;
             const format = this.index.join('.');
-            return this.getTabs() + format + 'IF ' + procedureStep.substring(procedureStep.indexOf(' ')) + '\n';
+            this.index.push(0);
+            return this.getTabs() + format + ' IF ' + (procedureStep.substring(procedureStep.indexOf(' '))).trim() + '\n';
         }
 
 
@@ -159,7 +161,7 @@ export class StoredProcedureParser implements IParser {
         const format = this.index.join('.');
 
 
-        return this.getTabs() + format + '. ' + (step.substring(step.indexOf(' '))).trim() + '\n';
+        return this.getTabs() +'\t' + format + '. ' + (step.substring(step.indexOf(' '))).trim() + '\n';
     }
 
     public static getTabs(): string {

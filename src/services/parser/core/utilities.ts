@@ -263,7 +263,6 @@ export class Utilities implements Utilities {
             inStateContent += tempContent;
 
         }
-        console.log(inStateContent);
         const inStateContentArr = this.getProcedureContentWhileCycle(inStateContent);
         const outOfStateContentArr = this.getProcedureContentWhileCycle(outOfStateContent);
 

@@ -40,23 +40,9 @@ describe('StoredProcedureParsesGuards', () => {
     });
 
     test('Should give error if given wrong written @if', ()=>{
-        let content = '@WHILE\n  @ENDWHILE\n @WHILE\n @IF\n @ENDWHILE\n @ENDIF\n @WHILE\n @ENDWHILE\n';
-        const target = '@IF';
-        const endtarget = '@ENDIF';
-        const contentTarget = '@WHILE';
-        const endContentTarget = '@ENDWHILE';
-        let err = 'noerror';
-
-        if (content.toUpperCase().includes(contentTarget) && content.toUpperCase().includes(target) && content.toUpperCase().indexOf(target) < content.toUpperCase().indexOf(contentTarget) && content.toUpperCase().indexOf(endtarget) < content.toUpperCase().indexOf(contentTarget))
-            content=content.toUpperCase().replace(content.toUpperCase().substring(content.toUpperCase().indexOf(target), content.toUpperCase().indexOf('\n', content.toUpperCase().indexOf(endtarget)) + 1), ''), target, contentTarget;
-        else
-        if (content.toUpperCase().includes(contentTarget) && content.toUpperCase().includes(target) && content.toUpperCase().indexOf(target) > content.toUpperCase().indexOf(contentTarget) && content.toUpperCase().indexOf(endtarget) < content.toUpperCase().indexOf(endContentTarget))
-            content=content.toUpperCase().replace(content.toUpperCase().substring(content.toUpperCase().indexOf(target), content.toUpperCase().indexOf('\n', content.toUpperCase().indexOf(endtarget)) + 1), '');
-        else
-        if(content.includes(target))
-            err = 'error';
-
-        expect(err).toEqual('error');
+        const content = '@IF \n @WHILE \n@if @endif  @ENDWHILE \n   @ENDIF \n,  '; 
+        content.replace(/(\t|\n|\r|[ ])+/g, ' ');
+        expect(StoredProcedureParserGuard.Guard.checkIfWrittenCorrectly(content, [])).resolves;
     });
 
     

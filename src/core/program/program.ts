@@ -37,11 +37,10 @@ export class Program implements IProgram {
     }
 
     /**
-     * 
+     * crea il file di documentazionenel percorso passato come dest(destinazione)
      * @param dir 
      * @param dest 
      */
-    //crea il file di documentazionenel percorso passato come dest(destinazione)
     public async createDocumentation(dir: Directory, dest: string): Promise<void> {
         dir.files = dir.files.filter(file => file.substring(file.indexOf('.')) == '.sql');
         for (const file of dir.files) {
@@ -51,8 +50,14 @@ export class Program implements IProgram {
                 .withDefinition(content)
                 .build();
             const parsedDocumentation = await parser?.parseAsync();
-            this.fsManager.writeFileAsync(dest + '/', file.substring(0,file.indexOf('.sql')) + '.md', parsedDocumentation as string);
+            this.ifNotEmptyWriteFile(dest, file, parsedDocumentation as string);
         }
+
+    }
+
+    public async ifNotEmptyWriteFile(dest: string, file: string, parsedDocumentation: string): Promise<void> {
+        if (parsedDocumentation.replace(/((\n)|(\t)|(\r)|[ ]|-)+/g, ' ') != '')
+            this.fsManager.writeFileAsync(dest + '/', file.substring(0, file.indexOf('.sql')) + '.md', parsedDocumentation);
 
     }
 
@@ -84,10 +89,10 @@ export class Program implements IProgram {
 
         if (!existsSync(destination + 'docs /'))
             await this.fsManager.writeDirectoryAsync(destination, 'docs');
-            
+
         await this.createDocFolders(sourcePaths.directory, destination + '/docs/');
 
-        
+
 
 
         // 1. prende argomento -s oppure ./ -> source

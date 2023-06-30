@@ -31,7 +31,7 @@ describe('FsManager ReadDirectoryAsync', () => {
                 children: [{
                     name: 'examples',
                     directory: 'tests/mockup/examples',
-                    files: ['StpXImptPdm_Articolo.sql', 'templateProcedureDoc.md'],
+                    files: ['StpXImptPdm_Articolo.sql', 'StpXImptPdm_ArticoloBadNest.sql', 'StpXImptPdm_ArticoloModified.sql', 'StpXImptPdm_ArticoloStateNestError.sql', 'templateProcedureDoc.md'],
                     children: []
                 },
                 {
@@ -64,7 +64,7 @@ describe('FsManager ReadDirectoryAsync', () => {
                 children: [{
                     name: 'examples',
                     directory: './tests/mockup/examples',
-                    files: ['StpXImptPdm_Articolo.sql', 'templateProcedureDoc.md'],
+                    files: ['StpXImptPdm_Articolo.sql', 'StpXImptPdm_ArticoloBadNest.sql', 'StpXImptPdm_ArticoloModified.sql', 'StpXImptPdm_ArticoloStateNestError.sql', 'templateProcedureDoc.md'],
                     children: []
                 },
                 {

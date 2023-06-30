@@ -77,6 +77,14 @@ BEGIN
 	-------------------------------------
 	-- @State 0 Domanda Iniziale
 	-------------------------------------
+
+    -- @WHILE
+
+    -- @IF
+
+    -- ENDWHILE
+
+    -- ENDIF
 	IF @KYStato = 0
         BEGIN
             SET @KYStato = 1

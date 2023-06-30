@@ -55,8 +55,8 @@ export class Program implements IProgram {
 
     }
 
-    public async ifNotEmptyWriteFile(dest:string, file:string, parsedDocumentation:string): Promise<void>{
-        if (parsedDocumentation.replace(/((\n)|(\t)|(\r)|[ ]|-)+/g, ' ')!='')
+    public async ifNotEmptyWriteFile(dest: string, file: string, parsedDocumentation: string): Promise<void> {
+        if (parsedDocumentation.replace(/((\n)|(\t)|(\r)|[ ]|-)+/g, ' ') != '')
             this.fsManager.writeFileAsync(dest + '/', file.substring(0, file.indexOf('.sql')) + '.md', parsedDocumentation);
 
     }
@@ -89,10 +89,10 @@ export class Program implements IProgram {
 
         if (!existsSync(destination + 'docs /'))
             await this.fsManager.writeDirectoryAsync(destination, 'docs');
-            
+
         await this.createDocFolders(sourcePaths.directory, destination + '/docs/');
 
-        
+
 
 
         // 1. prende argomento -s oppure ./ -> source

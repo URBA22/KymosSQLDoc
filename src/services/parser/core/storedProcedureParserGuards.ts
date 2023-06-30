@@ -5,6 +5,10 @@ export namespace StoredProcedureParserGuard {
 
         private constructor() { }
 
+        /**
+          * checks if the passed string is empty, if the number of '@state' and '@endstate' in  the string is equal, and if they are in right order 
+          * @param comment string, contains a file sql commented part
+          */
         static stateGuard(comment: string) {
             if (comment.replace(/((\n)|(\t)|(\r)|[ ])+/, '') == '')
                 throw new Error('The string is empty');
@@ -21,6 +25,10 @@ export namespace StoredProcedureParserGuard {
 
         }
 
+        /**
+         * checks if an '@state-@endstate' is nested
+         * @param comment string, contains a file sql commented part
+         */
         static checkIfStateNested(comment:string){
             comment= comment.toUpperCase();
             this.StateNestGuard(comment, '@IF');
@@ -29,7 +37,11 @@ export namespace StoredProcedureParserGuard {
             
         }
 
-
+        /**
+         * checks if a '@state-@endstate' is nested
+         * @param content string, contains a file sql commented part
+         * @param checkVar string, contains the string we want to check doesnt nest a '@state-@endstate'
+         */
         static StateNestGuard(content: string, checkVar:string){
             checkVar = checkVar.toUpperCase();
             const checkEnd = '@END' + checkVar.substring(1);
@@ -37,6 +49,12 @@ export namespace StoredProcedureParserGuard {
                 this.checkOrder(content, checkVar, checkEnd);
         }
 
+        /**
+         * checks if the "nests" contains or not the '@state-@endstate'
+         * @param content string, contains a file sql commented part
+         * @param checkVar string, contains the string we want to check doesnt nest a '@state-@endstate'
+         * @param checkEnd string, contains the string that represents the end of the string that we want to check doesnt nest a '@state-@endstate'
+         */
         public static checkOrder(content:string, checkVar:string, checkEnd:string){
             if (content.indexOf(checkVar) < content.indexOf('@STATE') && content.indexOf(checkEnd) > content.indexOf('@STATE'))
                 throw new Error('@STATE cannot be nested');
@@ -49,6 +67,10 @@ export namespace StoredProcedureParserGuard {
 
         }
 
+        /**
+         * checks if the number of '@while' and '@endwhile' is equal
+         * @param comment string, contains a file sql commented part
+         */
         static whileGuard(comment: string) {
             if (comment.toUpperCase().includes('@WHILE') && comment.toUpperCase().split('@WHILE').length != comment.toUpperCase().split('@ENDWHILE').length)
                 throw new Error('Number of @WHILE and @ENDWHILE isnt equal');
@@ -56,6 +78,11 @@ export namespace StoredProcedureParserGuard {
 
         }
 
+
+        /**
+         * checks if the number of '@if' and '@endif' is equal
+         * @param comment string, contains a file sql commented part
+         */
         static ifGuard(comment: string) {
             if (comment.toUpperCase().includes('@IF') && comment.toUpperCase().split('@IF').length != comment.toUpperCase().split('@ENDIF').length)
                 throw new Error('Number of @IF and @ENDIF isnt equal');
@@ -63,12 +90,22 @@ export namespace StoredProcedureParserGuard {
 
         }
 
+
+        /**
+         * checks if the number of '@section' and '@endsection' is equal
+         * @param comment string, contains a file sql commented part
+         */
         static sectionGuard(comment: string) {
             if (comment.toUpperCase().includes('@SECTION') && comment.toUpperCase().split('@SECTION').length != comment.toUpperCase().split('@ENDSECTION').length)
                 throw new Error('Number of @SECTION and @ENDSECTION isnt equal');
 
         }
 
+        /**
+         * checks if the order in which 2 or more nests are written is right
+         * @param content string, contains a file sql commented part
+         * @param arr string array, ideally starts from empty, will contain one or more '@if', '@while', '@section' or '@state'
+         */
         static checkIfWrittenCorrectly(content:string, arr:string[]){
             
             const index = Utilities.getProcedureFirstIndex(content);
@@ -87,6 +124,11 @@ export namespace StoredProcedureParserGuard {
             if(arr.length!=0)
                 throw new Error('Procedure is nested wrong');
         }
+        /**
+         * checks if two specific strings' substrings are equal
+         * @param expected string, contains a '@state' or '@if' or '@while' or '@section'  string from which we'll get a substring that we want to check if is equal to the expectedend substring
+         * @param expectedend string, contains a '@end' string we will from which we'll get a substring that we want to check if is equal to the expected substring
+         */
         static checkIfCorrectType(expected:string, expectedend:string){
             expected=expected.substring(1);
             expectedend = expectedend.substring(4);

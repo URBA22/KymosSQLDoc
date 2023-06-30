@@ -51,8 +51,14 @@ export class Program implements IProgram {
                 .withDefinition(content)
                 .build();
             const parsedDocumentation = await parser?.parseAsync();
-            this.fsManager.writeFileAsync(dest + '/', file.substring(0,file.indexOf('.sql')) + '.md', parsedDocumentation as string);
+            this.ifNotEmptyWriteFile(dest, file, parsedDocumentation as string);
         }
+
+    }
+
+    public async ifNotEmptyWriteFile(dest:string, file:string, parsedDocumentation:string): Promise<void>{
+        if (parsedDocumentation.replace(/((\n)|(\t)|(\r)|[ ]|-)+/g, ' ')!='')
+            this.fsManager.writeFileAsync(dest + '/', file.substring(0, file.indexOf('.sql')) + '.md', parsedDocumentation);
 
     }
 

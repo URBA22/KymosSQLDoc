@@ -6,7 +6,7 @@ export class StoredProcedureParser implements IParser {
     private definition: string;
     private static index: number[] = [0];
     private static indexArrDepth = 0;
-    private static inIfOrWhile=0;
+    private static inIfOrWhile = 0;
 
 
     public constructor(definition: string) {
@@ -17,7 +17,7 @@ export class StoredProcedureParser implements IParser {
 
 
     public async parseAsync() {
-        let newDefinition='';
+        let newDefinition = '';
 
         //constant that contains both commented part and non-commented part of definition
         const split = Utilities.splitDefinitionComment(this.definition);
@@ -34,20 +34,23 @@ export class StoredProcedureParser implements IParser {
 
             newDefinition = await this.getFileText();
 
-        } catch (error:any) {
+        } catch (error: any) {
             console.log(error);
-            newDefinition=error;
         }
         return newDefinition;
 
     }
 
-    public async getFileText(): Promise<string>{
+    /**
+     * gets the formatted content of the file that is going to be created, takes the content of a file and formats it
+     * @returns string, the formatted content of the file that is going to be created, takes the content of a file and modifies it
+     */
+    public async getFileText(): Promise<string> {
 
 
         //constant that contains both commented part and non-commented part of definition
         const split = Utilities.splitDefinitionComment(this.definition);
-        
+
         //writes the name of the procedure 
         let newDefinition = '# ' + Utilities.getObjectName(split.definition, Utilities.getObjectType(this.definition, Utilities.getCreateOrAlter(this.definition))) + '\n';
 
@@ -83,6 +86,7 @@ export class StoredProcedureParser implements IParser {
             newDefinition += Utilities.getParameterOutPut(param) + ' | descrizione? \n';
         }
 
+
         const inAndOutOfState = Utilities.getProcedureContent(split.comments);
 
         newDefinition += '\n### Nessuno Stato\nStep di esecuzione che vengono eseguiti indipendentemente dallo stato della procedura\n';
@@ -99,6 +103,13 @@ export class StoredProcedureParser implements IParser {
         return newDefinition;
     }
 
+    /**
+     * gets the formatted string of a step, a section, a state or an if, or and end of
+     * the same ones
+     * @param procedureStep string, contains a string which is either a step, a section, a state or an if, or and end of
+     * the same ones
+     * @returns string, based on what type of "step" procedureStep is, returns a formatted string
+     */
     public static getFormattedProcedureStep(procedureStep: string): string {
 
         let formattedString = '';
@@ -140,13 +151,13 @@ export class StoredProcedureParser implements IParser {
         }
 
         if (procedureStep.includes('@IF')) {
-            
+
             this.index[this.indexArrDepth]++;
-            const format = this.getTabs()  + this.index.join('.');
+            const format = this.getTabs() + this.index.join('.');
             this.indexArrDepth++;
             this.index.push(0);
             this.inIfOrWhile++;
-            return  format + '. IF ' + (procedureStep.substring(procedureStep.indexOf(' '))).trim() + '\n\n';
+            return format + '. IF ' + (procedureStep.substring(procedureStep.indexOf(' '))).trim() + '\n\n';
         }
 
 
@@ -162,7 +173,7 @@ export class StoredProcedureParser implements IParser {
             const format = this.index.join('.');
             this.indexArrDepth++;
             this.index.push(0);
-            return format + '. <details>\n'  + '\t<summary>' + (procedureStep.substring(procedureStep.indexOf(' '))).trim() + '</summary>\n\n';
+            return format + '. <details>\n' + '\t<summary>' + (procedureStep.substring(procedureStep.indexOf(' '))).trim() + '</summary>\n\n';
         }
 
 
@@ -181,6 +192,11 @@ export class StoredProcedureParser implements IParser {
         return formattedString;
     }
 
+    /**
+     * gets the formatted text for a step type of "step"
+     * @param step step contains a string which refers to a string that contains '@step' and it's descritpion
+     * @returns string, a formatted string of a '@step'
+     */
     public static writeStep(step: string): string {
 
         this.index[this.indexArrDepth]++;
@@ -190,25 +206,40 @@ export class StoredProcedureParser implements IParser {
         return this.getTabs() + format + '. ' + (step.substring(step.indexOf(' '))).trim() + '\n\n';
     }
 
+    /**
+     * its used to get the amount of &nbsp; and if there is going to be a \t
+     * @returns string, that could cointain one tab and many &nbsp;, 4 for the amount of if and while we're in
+     */
     public static getTabs(): string {
         let tabs = '';
-        if(this.indexArrDepth>0)
-            tabs+='\t';
-        for(let i=0; i<this.inIfOrWhile; i++)
+        if (this.indexArrDepth > 0)
+            tabs += '\t';
+        for (let i = 0; i < this.inIfOrWhile; i++)
             tabs += '&nbsp;&nbsp;&nbsp;&nbsp;';
         return tabs;
     }
 
-    public static getRes(procedureStep:string):string{
-        if(!procedureStep.toUpperCase().includes('@RES'))
+    /**
+     * gets the result of a '@state' type of "step"
+     * @param procedureStep contains a '@state' "step", meaning '@state' + its description
+     * @returns string, if the string that is passed doesnt contain '@RES', a null string, if it did, it returns a formatted string containing res + a number
+     */
+    public static getRes(procedureStep: string): string {
+        if (!procedureStep.toUpperCase().includes('@RES'))
             return '';
         return ' ' + procedureStep.substring(procedureStep.toUpperCase().indexOf('@RES') + 1, procedureStep.indexOf(' ', procedureStep.toUpperCase().indexOf('@RES') + 5));
 
     }
-
-    public static getDescription(procedureStep: string, res:string, number: string): string {
+    /**
+     * gets the descritption of a '@state' type of "step"
+     * @param procedureStep contains a '@state' "step", meaning '@state' + its description
+     * @param res contains a part of procedureStep which is, if it exist, res + a number
+     * @param number contains a part of procedureStep which is the number after '@state'
+     * @returns string, the description of a '@state' "step"
+     */
+    public static getDescription(procedureStep: string, res: string, number: string): string {
         if (!procedureStep.toUpperCase().includes('@RES'))
-            return (procedureStep.substring(procedureStep.toUpperCase().indexOf(number)+number.length)).trim(  );
+            return (procedureStep.substring(procedureStep.toUpperCase().indexOf(number) + number.length)).trim();
         return (procedureStep.substring(procedureStep.toUpperCase().indexOf(' ', procedureStep.toUpperCase().indexOf('@RES') + res.length))).trim();
 
     }

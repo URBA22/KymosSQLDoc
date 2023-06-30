@@ -12,28 +12,6 @@ export namespace StoredProcedureParserGuard {
             if (comment.toUpperCase().includes('@STATE') && comment.toUpperCase().split('@STATE').length != comment.toUpperCase().split('@ENDSTATE').length)
                 throw new Error('Number of @state and @ENDSTATE isnt equal');
 
-            //----------------------------------------------------
-
-            if (comment.toUpperCase().includes('@STATE') && comment.toUpperCase().includes('@IF') && comment.toUpperCase().indexOf('@STATE') > comment.toUpperCase().indexOf('@IF') && comment.toUpperCase().indexOf('@STATE') > comment.toUpperCase().indexOf('@ENDIF'))
-                this.stateGuard(comment.toUpperCase().replace(comment.toUpperCase().substring(comment.toUpperCase().indexOf('@IF'), comment.toUpperCase().indexOf('\n', comment.toUpperCase().indexOf('@ENDIF')) + 1), ''));
-            else
-            if (comment.toUpperCase().includes('@IF') && comment.toUpperCase().indexOf('@STATE') > comment.toUpperCase().indexOf('@IF'))
-                throw new Error('@state cannot be nested');
-            
-            if (comment.toUpperCase().includes('@STATE') && comment.toUpperCase().includes('@WHILE') && comment.toUpperCase().indexOf('@STATE') > comment.toUpperCase().indexOf('@WHILE') && comment.toUpperCase().indexOf('@STATE') > comment.toUpperCase().indexOf('@ENDWHILE'))
-                this.stateGuard(comment.toUpperCase().replace(comment.toUpperCase().substring(comment.toUpperCase().indexOf('@IF'), comment.toUpperCase().indexOf('\n', comment.toUpperCase().indexOf('@ENDWHILE')) + 1), ''));
-            else
-            if (comment.toUpperCase().includes('@WHILE') && comment.toUpperCase().indexOf('@STATE') > comment.toUpperCase().indexOf('@WHILE'))
-                throw new Error('@state cannot be nested');
-
-            if (comment.toUpperCase().includes('@STATE') && comment.toUpperCase().includes('@SECTION') && comment.toUpperCase().indexOf('@STATE') > comment.toUpperCase().indexOf('@SECTION') && comment.toUpperCase().indexOf('@STATE') > comment.toUpperCase().indexOf('@ENDSECTION'))
-                this.stateGuard(comment.toUpperCase().replace(comment.toUpperCase().substring(comment.toUpperCase().indexOf('@SECTION'), comment.toUpperCase().indexOf('\n', comment.toUpperCase().indexOf('@ENDSECTION')) + 1), ''));
-            else
-            if (comment.toUpperCase().includes('@STATE') && comment.toUpperCase().includes('@SECTION') && comment.toUpperCase().indexOf('@STATE') > comment.toUpperCase().indexOf('@SECTION'))
-                throw new Error('@state cannot be nested');
-            
-            //------------------------------------------------------------
-
             if (comment.toUpperCase().includes('@STATE') && comment.toUpperCase().indexOf('@STATE') < comment.toUpperCase().indexOf('@ENDSTATE'))
                 this.stateGuard(comment.toUpperCase().substring(comment.toUpperCase().indexOf('\n', comment.toUpperCase().indexOf('@ENDSTATE'))));
             else
@@ -43,6 +21,33 @@ export namespace StoredProcedureParserGuard {
 
         }
 
+        static checkIfStateNested(comment:string){
+            comment= comment.toUpperCase();
+            this.StateNestGuard(comment, '@IF');
+            this.StateNestGuard(comment, '@WHILE');
+            this.StateNestGuard(comment, '@SECTION');
+            
+        }
+
+
+        static StateNestGuard(content: string, checkVar:string){
+            checkVar = checkVar.toUpperCase();
+            const checkEnd = '@END' + checkVar.substring(1);
+            if(content.includes('@STATE')&&content.includes(checkVar))
+                this.checkOrder(content, checkVar, checkEnd);
+        }
+
+        public static checkOrder(content:string, checkVar:string, checkEnd:string){
+            if (content.indexOf(checkVar) < content.indexOf('@STATE') && content.indexOf(checkEnd) > content.indexOf('@STATE'))
+                throw new Error('@STATE cannot be nested');
+            if (content.indexOf(checkVar) > content.indexOf('@ENDSTATE'))
+                this.StateNestGuard(content.replace(content.substring(content.indexOf(checkVar), content.indexOf(checkEnd)+checkEnd.length), ''), checkVar);
+            if (content.indexOf(checkVar) < content.indexOf('@STATE') && content.indexOf(checkEnd) < content.indexOf('@STATE'))
+                this.StateNestGuard(content.replace(content.substring(content.indexOf(checkVar), content.indexOf(checkEnd) + checkEnd.length), ''), checkVar);
+            if(content.includes('@STATE'))
+                this.StateNestGuard(content.replace(content.substring(content.indexOf('@STATE'), content.indexOf('@ENDSTATE')+9), ''), checkVar);
+
+        }
 
         static whileGuard(comment: string) {
             if (comment.toUpperCase().includes('@WHILE') && comment.toUpperCase().split('@WHILE').length != comment.toUpperCase().split('@ENDWHILE').length)

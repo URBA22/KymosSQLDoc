@@ -68,33 +68,16 @@ BEGIN
     SELECT @UrlDboH = AdmURLDboH
     FROM TbSetting
     WHERE IdSetting = 1
-    -- @step fuori
-    -- @step fuori
-    -- @step fuori
-    
+
 	-------------------------------------
 	-- Parametri di risposta
 	-------------------------------------
 	SET @ParamCtrl = '<ParamCtrl>' + REPLACE(REPLACE(@KYMsg, '-|', '<'), '|-', '>') + '</ParamCtrl>'
 
+    -- @IF
 	-------------------------------------
 	-- @State 0 Domanda Iniziale
 	-------------------------------------
-
-    --@step prova
-    --@step prova
-    --@step prova
-
-    --@if prova
-    --@while prova
-    --@if prova
-    --@if prova
-    --@step prova
-    --@step prova
-    --@endif prova
-    --@endif prova
-    --@endwhile prova
-    --@endif prova
 	IF @KYStato = 0
         BEGIN
             SET @KYStato = 1
@@ -134,7 +117,7 @@ BEGIN
     -------------------------------------
     -- @EndState 
 	-------------------------------------
-
+    -- @ENDIF
 
 	-------------------------------------
 	-- @State 1 @Res 1 Esecuzione procedura

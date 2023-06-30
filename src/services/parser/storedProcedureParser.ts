@@ -6,6 +6,7 @@ export class StoredProcedureParser implements IParser {
     private definition: string;
     private static index: number[] = [0];
     private static indexArrDepth = 0;
+    private static inIfOrWhile=0;
 
 
     public constructor(definition: string) {
@@ -16,20 +17,37 @@ export class StoredProcedureParser implements IParser {
 
 
     public async parseAsync() {
-
-
+        let newDefinition='';
 
         //constant that contains both commented part and non-commented part of definition
         const split = Utilities.splitDefinitionComment(this.definition);
 
         const content = split.comments.toUpperCase().replace(/((@STEP)|(\n)|(\t)|(\r)|[ ]|-)+/g, ' ');
 
-        StoredProcedureParserGuard.Guard.stateGuard(split.comments);
-        StoredProcedureParserGuard.Guard.checkIfWrittenCorrectly(content, []);
-        StoredProcedureParserGuard.Guard.ifGuard(split.comments);
-        StoredProcedureParserGuard.Guard.sectionGuard(split.comments);
-        StoredProcedureParserGuard.Guard.whileGuard(split.comments);
+        try {
+            StoredProcedureParserGuard.Guard.stateGuard(split.comments);
+            StoredProcedureParserGuard.Guard.checkIfStateNested(split.comments);
+            StoredProcedureParserGuard.Guard.checkIfWrittenCorrectly(content, []);
+            StoredProcedureParserGuard.Guard.ifGuard(split.comments);
+            StoredProcedureParserGuard.Guard.sectionGuard(split.comments);
+            StoredProcedureParserGuard.Guard.whileGuard(split.comments);
 
+            newDefinition = await this.getFileText();
+
+        } catch (error:any) {
+            console.log(error);
+            newDefinition=error;
+        }
+        return newDefinition;
+
+    }
+
+    public async getFileText(): Promise<string>{
+
+
+        //constant that contains both commented part and non-commented part of definition
+        const split = Utilities.splitDefinitionComment(this.definition);
+        
         //writes the name of the procedure 
         let newDefinition = '# ' + Utilities.getObjectName(split.definition, Utilities.getObjectType(this.definition, Utilities.getCreateOrAlter(this.definition))) + '\n';
 
@@ -97,16 +115,19 @@ export class StoredProcedureParser implements IParser {
         if (procedureStep.includes('@ENDWHILE')) {
             this.index.pop();
             this.indexArrDepth--;
+            this.inIfOrWhile--;
             return '';
         }
 
 
         if (procedureStep.includes('@WHILE')) {
+
             this.index[this.indexArrDepth]++;
+            const format = this.getTabs() + this.index.join('.');
             this.indexArrDepth++;
-            const format = this.index.join('.');
             this.index.push(0);
-            return this.getTabs() + format + ' WHILE ' + (procedureStep.substring(procedureStep.indexOf(' '))).trim() + '\n';
+            this.inIfOrWhile++;
+            return format + '. WHILE ' + (procedureStep.substring(procedureStep.indexOf(' '))).trim() + '\n\n';
         }
 
 
@@ -114,15 +135,18 @@ export class StoredProcedureParser implements IParser {
         if (procedureStep.includes('@ENDIF')) {
             this.index.pop();
             this.indexArrDepth--;
+            this.inIfOrWhile--;
             return '';
         }
 
         if (procedureStep.includes('@IF')) {
+            
             this.index[this.indexArrDepth]++;
+            const format = this.getTabs()  + this.index.join('.');
             this.indexArrDepth++;
-            const format = this.index.join('.');
             this.index.push(0);
-            return this.getTabs() + format + ' IF ' + (procedureStep.substring(procedureStep.indexOf(' '))).trim() + '\n';
+            this.inIfOrWhile++;
+            return  format + '. IF ' + (procedureStep.substring(procedureStep.indexOf(' '))).trim() + '\n\n';
         }
 
 
@@ -135,9 +159,10 @@ export class StoredProcedureParser implements IParser {
 
         if (procedureStep.includes('@SECTION')) {
             this.index[this.indexArrDepth]++;
-            this.index.push(0);
+            const format = this.index.join('.');
             this.indexArrDepth++;
-            return '<details>\n' + this.getTabs() + '<summary>' + (procedureStep.substring(procedureStep.indexOf(' '))).trim() + '</summary>\n\n';
+            this.index.push(0);
+            return format + '. <details>\n'  + '\t<summary>' + (procedureStep.substring(procedureStep.indexOf(' '))).trim() + '</summary>\n\n';
         }
 
 
@@ -146,8 +171,9 @@ export class StoredProcedureParser implements IParser {
             this.index = [0];
             this.indexArrDepth = 0;
             const number = procedureStep.substring(7, procedureStep.indexOf(' ', 8));
-            const description = procedureStep.substring(procedureStep.indexOf(number) + number.length);
-            return '\n### Stato ' + number + '\n' + description + '\n\n';
+            const res = this.getRes(procedureStep);
+            const description = this.getDescription(procedureStep, res, number);
+            return '\n### Stato ' + number + res + '\n' + description + '\n\n';
         }
 
 
@@ -161,16 +187,30 @@ export class StoredProcedureParser implements IParser {
         const format = this.index.join('.');
 
 
-        return this.getTabs() +'\t' + format + '. ' + (step.substring(step.indexOf(' '))).trim() + '\n';
+        return this.getTabs() + format + '. ' + (step.substring(step.indexOf(' '))).trim() + '\n\n';
     }
 
     public static getTabs(): string {
         let tabs = '';
-        for (const i of this.index) {
-            tabs += '\t';
-        }
+        if(this.indexArrDepth>0)
+            tabs+='\t';
+        for(let i=0; i<this.inIfOrWhile; i++)
+            tabs += '&nbsp;&nbsp;&nbsp;&nbsp;';
         return tabs;
     }
 
+    public static getRes(procedureStep:string):string{
+        if(!procedureStep.toUpperCase().includes('@RES'))
+            return '';
+        return ' ' + procedureStep.substring(procedureStep.toUpperCase().indexOf('@RES') + 1, procedureStep.indexOf(' ', procedureStep.toUpperCase().indexOf('@RES') + 5));
+
+    }
+
+    public static getDescription(procedureStep: string, res:string, number: string): string {
+        if (!procedureStep.toUpperCase().includes('@RES'))
+            return (procedureStep.substring(procedureStep.toUpperCase().indexOf(number)+number.length)).trim(  );
+        return (procedureStep.substring(procedureStep.toUpperCase().indexOf(' ', procedureStep.toUpperCase().indexOf('@RES') + res.length))).trim();
+
+    }
 
 }

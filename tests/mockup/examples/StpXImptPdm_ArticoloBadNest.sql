@@ -68,10 +68,7 @@ BEGIN
     SELECT @UrlDboH = AdmURLDboH
     FROM TbSetting
     WHERE IdSetting = 1
-    -- @step fuori
-    -- @step fuori
-    -- @step fuori
-    
+
 	-------------------------------------
 	-- Parametri di risposta
 	-------------------------------------
@@ -81,20 +78,13 @@ BEGIN
 	-- @State 0 Domanda Iniziale
 	-------------------------------------
 
-    --@step prova
-    --@step prova
-    --@step prova
+    -- @WHILE
 
-    --@if prova
-    --@while prova
-    --@if prova
-    --@if prova
-    --@step prova
-    --@step prova
-    --@endif prova
-    --@endif prova
-    --@endwhile prova
-    --@endif prova
+    -- @IF
+
+    -- ENDWHILE
+
+    -- ENDIF
 	IF @KYStato = 0
         BEGIN
             SET @KYStato = 1

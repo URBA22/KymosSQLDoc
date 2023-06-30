@@ -37,11 +37,10 @@ export class Program implements IProgram {
     }
 
     /**
-     * 
+     * crea il file di documentazionenel percorso passato come dest(destinazione)
      * @param dir 
      * @param dest 
      */
-    //crea il file di documentazionenel percorso passato come dest(destinazione)
     public async createDocumentation(dir: Directory, dest: string): Promise<void> {
         dir.files = dir.files.filter(file => file.substring(file.indexOf('.')) == '.sql');
         for (const file of dir.files) {

@@ -1,0 +1,9 @@
+
+export enum Type {
+    WIEW,
+    TABLE,
+    STORED_PROCEDURE,
+    TABLE_FUNCTION,
+    SCALAR_FUNCTION,
+    TRIGGER
+}

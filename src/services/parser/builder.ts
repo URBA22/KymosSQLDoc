@@ -21,18 +21,8 @@ export default class ParserBuilder implements IParserBuilder_Step0, IParserBuild
     
     private constructor() { }
 
-    private getSQLTypeObject():IParser | undefined {
-        /*
-            CREATE / CREATE<sl>OR<sl>ALTER / ALTER
-            <sl>
-            PROCEDURE / TRIGGER / VIEW / FUNCTION / TABLE
-            <sl>
-            ?? [SCHEMA]. ??
-            [NOME_OGGETTO]
-
-            <sl> -> uno o più spazi o 'a capo'
-
-        */
+    private getSQLTypeObject(): IParser | undefined {
+        
         const splitDefinition = Utilities.splitDefinitionComment(this.definition as string);
         const typeOfObject = Utilities.getObjectType(splitDefinition.definition, Utilities.getCreateOrAlter(splitDefinition.definition));
 

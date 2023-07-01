@@ -22,8 +22,8 @@ export class Program implements IProgram {
 
     private async createDocFolders(dir: Directory, dest: string) {
         // TODO: use an object to store definitions (IParser) and locations, then writes file and directories
-        // { name: '', location '', definition: IParser,  documentation: '' } []
-        // For dependecies, use IParser.contains(objName: string);
+        // { name: '', location '', definition: SQLObject,  documentation: '' } []
+        // For dependecies, use SQLObject.contains(objName: string);
         // First, push all the definition
         // After, parse all
         // Then create files

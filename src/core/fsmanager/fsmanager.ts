@@ -25,7 +25,7 @@ export class FsManager implements IFsManager {
         this.absolutePath = absolutePath ?? '';
     }
 
-    private static async mergePath(root: string, path: string) {
+    public static async mergePath(root: string, path: string) {
         if (root == '') {
             return path;
         }

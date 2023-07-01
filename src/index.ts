@@ -27,6 +27,10 @@ const program = ProgramBuilder
     .build();
 
 
-program.executeAsync(process.argv).catch((error: Error)=>{
-    console.log(error.message);
-});
+program.executeAsync(process.argv)
+    .then(() => {
+        console.log('Documentazione generata correttamente');
+    })
+    .catch((error: Error) => {
+        console.log(error.message);
+    });

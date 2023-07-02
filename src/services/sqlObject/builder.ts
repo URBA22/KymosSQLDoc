@@ -7,7 +7,7 @@ interface ISqlObjectBuilder_Step0 {
 }
 
 interface ISqlObjectBuilder_Step1 {
-    build(definition: string): ISqlObject;
+    build(): ISqlObject;
 }
 
 export default class SqlObjectBuilder implements ISqlObjectBuilder_Step0, ISqlObjectBuilder_Step1 {
@@ -26,7 +26,7 @@ export default class SqlObjectBuilder implements ISqlObjectBuilder_Step0, ISqlOb
         return this;
     }
 
-    public build(definition: string): ISqlObject {
-        return new SqlObject(definition);
+    public build(): ISqlObject {
+        return new SqlObject(this.definition as string);
     }
 }

@@ -1,4 +1,4 @@
 
-export interface IParser {
-    parseAsync(): Promise<string>;
-}
+// export interface IParser {
+//     parseAsync(): Promise<string>;
+// }

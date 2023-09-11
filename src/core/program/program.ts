@@ -1,5 +1,5 @@
 import { ICommand } from '../command';
-import { ParserBuilder } from '../../services';
+// import { ParserBuilder } from '../../services';
 import { FsManager, IFsManager } from '../fsmanager/fsmanager';
 import { Root } from '../fsmanager/core/Root';
 import { Directory } from '../fsmanager/core/Directory';
@@ -63,19 +63,19 @@ export class Program implements IProgram {
     }
 
 
-    private async createDocumentation(dir: Directory, dest: string): Promise<void> {
-        dir.files = dir.files.filter(file => file.substring(file.indexOf('.')) == '.sql');
-        for (const file of dir.files) {
-            const content = await this.fsManager.readFileAsync(dir.directory, file);
-            const parser = ParserBuilder
-                .createParser()
-                .withDefinition(content)
-                .build();
-            const parsedDocumentation = await parser?.parseAsync();
-            this.writeFile(dest, file, parsedDocumentation as string);
-        }
+    // private async createDocumentation(dir: Directory, dest: string): Promise<void> {
+    //     dir.files = dir.files.filter(file => file.substring(file.indexOf('.')) == '.sql');
+    //     for (const file of dir.files) {
+    //         const content = await this.fsManager.readFileAsync(dir.directory, file);
+    //         const parser = ParserBuilder
+    //             .createParser()
+    //             .withDefinition(content)
+    //             .build();
+    //         const parsedDocumentation = await parser?.parseAsync();
+    //         this.writeFile(dest, file, parsedDocumentation as string);
+    //     }
 
-    }
+    // }
 
     private async writeFile(dest: string, file: string, parsedDocumentation: string): Promise<void> {
         if (parsedDocumentation.replace(/((\n)|(\t)|(\r)|[ ]|-)+/g, ' ') != '')

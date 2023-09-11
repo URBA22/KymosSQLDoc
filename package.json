@@ -14,7 +14,7 @@
     "lint": "eslint . --ext .ts",
     "lint-and-fix": "eslint . --ext .ts --fix",
     "test": "jest",
-    "single-test": "npm test -- -t=execute"
+    "single-test": "npm test -- -t \"SqlObject SplitDefinition Should split definition and comments\""
   },
   "repository": {
     "type": "git",

@@ -1,5 +1,5 @@
 import { ArgumentNullError, Guard, ArgumentNullOrEmptyError } from './guardClauses';
-import { IParser, ParserBuilder } from './parser';
+// import { IParser, ParserBuilder } from './parser';
 
 
-export { ArgumentNullError, Guard, ArgumentNullOrEmptyError, IParser, ParserBuilder };
+export { ArgumentNullError, Guard, ArgumentNullOrEmptyError };

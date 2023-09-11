@@ -14,7 +14,6 @@ const command = CommandBuilder
     // .withOption('-f, --format <value>', 'Chose between html and md, or both. Default is md')
     .build();
 
-
 const fsManager = FsManagerBuilder
     .createFsManager()
     .build();
@@ -27,6 +26,18 @@ const program = ProgramBuilder
     .build();
 
 
-program.executeAsync(process.argv).catch((error: Error)=>{
-    console.log(error.message);
-});
+// const fakeArgs = [
+//     '/usr/local/bin/node',
+//     '/Users/simone/Kymos/KymosSQLDoc/KymosSQLDoc/dist/index.js',
+//     '-s',
+//     // '../../ProgettiDatabase/DBO/'
+//     './tests/mockup/examples'
+// ];
+
+program.executeAsync(process.argv)
+    .then(() => {
+        console.log('Documentazione generata correttamente');
+    })
+    .catch((error: Error) => {
+        console.log(error.message);
+    });

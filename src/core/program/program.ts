@@ -1,12 +1,12 @@
 import { ICommand } from '../command';
-import { ParserBuilder } from '../../services';
+// import { ParserBuilder } from '../../services';
 import { FsManager, IFsManager } from '../fsmanager/fsmanager';
 import { Root } from '../fsmanager/core/Root';
 import { Directory } from '../fsmanager/core/Directory';
-import { Utilities } from '../../services/parser/core/utilities';
-import fs, { existsSync, mkdir } from 'fs';
+import fs from 'fs';
 import { InvalidPathError } from '../../services/guardClauses/errors';
-import { StoredProcedureParser } from '../../services/parser/storedProcedureParser';
+import { ISqlObject } from '../../services/sqlObject/sqlObject';
+import SqlObjectBuilder from '../../services/sqlObject/builder';
 
 
 export interface IProgram {
@@ -22,61 +22,81 @@ export class Program implements IProgram {
         this.fsManager = fsManager;
     }
 
-    public async createDocFolders(dir: Directory, dest: string) {
-        const fsManager = new FsManager();
+    private async createSqlObjects(dir: Directory) {
+        const objectsOperations: Promise<ISqlObject>[] = [];
+        const readFileOperations: Promise<string>[] = [];
+        const createDocsOperations: Promise<ISqlObject[]>[] = [];
 
-        await fsManager.writeDirectoryAsync(dest, dir.name);
-
-        await this.createDocumentation(dir, dest + '/' + dir.name);
-
-        const createDocFolderThreads: Promise<void>[] = [];
-
-        for (const child of dir.children)
-            createDocFolderThreads.push(this.createDocFolders(child, dest + '/' + dir.name));
-        Promise.all(createDocFolderThreads);
-    }
-
-    /**
-     * crea il file di documentazionenel percorso passato come dest(destinazione)
-     * @param dir 
-     * @param dest 
-     */
-    public async createDocumentation(dir: Directory, dest: string): Promise<void> {
-        dir.files = dir.files.filter(file => file.substring(file.indexOf('.')) == '.sql');
-        for (const file of dir.files) {
-            const content = await this.fsManager.readFileAsync(dir.directory, file);
-            const parser = ParserBuilder
-                .createParser()
-                .withDefinition(content)
-                .build();
-            const parsedDocumentation = await parser?.parseAsync();
-            this.ifNotEmptyWriteFile(dest, file, parsedDocumentation as string);
+        for (const subDir of dir.children) {
+            createDocsOperations.push(this.createSqlObjects(subDir));
         }
 
+        for (const file of dir.files.filter(file => file.substring(file.indexOf('.')) == '.sql')) {
+            readFileOperations.push(this.fsManager.readFileAsync(dir.directory, file));
+        }
+
+        for (const readFileOperation of await Promise.allSettled(readFileOperations)) {
+            const content = readFileOperation.status === 'fulfilled' ? readFileOperation.value : '';
+            objectsOperations.push(SqlObjectBuilder.createSqlObject()
+                .fromDefinition(content)
+                .build()
+                .elaborateAsync());
+        }
+
+        let objects: ISqlObject[] = (await Promise.allSettled(objectsOperations))
+            .map(objectOperation => {
+                if (objectOperation.status === 'fulfilled')
+                    return objectOperation.value;
+            })
+            .filter(object => object !== undefined) as ISqlObject[];
+        
+        const objectsSubFolders = (await Promise.allSettled(createDocsOperations))
+            .map(objectOperation => {
+                if (objectOperation.status === 'fulfilled')
+                    return objectOperation.value;
+            })
+            .filter(object => object !== undefined && object.length == 0) as ISqlObject[][];
+        
+        objects = objects.concat(...objectsSubFolders); 
+        
+        return objects;
     }
 
-    public async ifNotEmptyWriteFile(dest: string, file: string, parsedDocumentation: string): Promise<void> {
-        if (parsedDocumentation.replace(/((\n)|(\t)|(\r)|[ ]|-)+/g, ' ') != '')
-            this.fsManager.writeFileAsync(dest + '/', file.substring(0, file.indexOf('.sql')) + '.md', parsedDocumentation);
 
-    }
+    // private async createDocumentation(dir: Directory, dest: string): Promise<void> {
+    //     dir.files = dir.files.filter(file => file.substring(file.indexOf('.')) == '.sql');
+    //     for (const file of dir.files) {
+    //         const content = await this.fsManager.readFileAsync(dir.directory, file);
+    //         const parser = ParserBuilder
+    //             .createParser()
+    //             .withDefinition(content)
+    //             .build();
+    //         const parsedDocumentation = await parser?.parseAsync();
+    //         this.writeFile(dest, file, parsedDocumentation as string);
+    //     }
+
+    // }
+
+    // private async writeFile(dest: string, file: string, parsedDocumentation: string): Promise<void> {
+    //     if (parsedDocumentation.replace(/((\n)|(\t)|(\r)|[ ]|-)+/g, ' ') != '')
+    //         this.fsManager.writeFileAsync(dest + '/', file.replace('.sql', '.md'), parsedDocumentation);
+    // }
 
 
 
 
-
+    /**
+     * Start program execution. 
+     * @param argv Process arguments
+     * @returns void
+     */
     public async executeAsync(argv: string[]): Promise<void> {
         const programOptions = await this.command.parseAsync(argv);
-
-
 
         const source = programOptions.source ?? './';
         const destination = programOptions.out ?? './';
 
-
-
-
-
+        // TODO: change fs with this.fsManager
         if (!fs.existsSync(source) || !fs.lstatSync(source).isDirectory()) {
             throw new InvalidPathError(source);
         }
@@ -84,30 +104,15 @@ export class Program implements IProgram {
             throw new InvalidPathError(destination);
         }
 
-
         const sourcePaths: Root = await this.fsManager.readDirectoryAsync(source);
 
-        if (!existsSync(destination + 'docs /'))
+        // TODO: change fs with this.fsManager
+        if (!fs.existsSync(await FsManager.mergePath(destination, 'docs/')))
             await this.fsManager.writeDirectoryAsync(destination, 'docs');
 
-        await this.createDocFolders(sourcePaths.directory, destination + '/docs/');
+        const objects = await this.createSqlObjects(sourcePaths.directory); //, destination + '/docs/');
 
 
-
-
-        // 1. prende argomento -s oppure ./ -> source
-        // 2. prende argomento -o oppure ./ -> destination
-
-        // 3. contrtolla che source e destination sia una directory
-
-        // 4. legge la directory source
-        // 5. guarda la cartella restituita
-        // 6. per ogni file nella cartella:
-        //      6.1. esegue il parsing della documentazione
-        //      6.2. crea una cartella speculare in destination
-        //      6.3. crea un file .md con stesso nome e con documentazione
-        // 7. ripete punto 6 per tutte le sotto directory 
-
-        console.log(programOptions);
+        // TODO: wirite .md doc files and directories
     }
 }

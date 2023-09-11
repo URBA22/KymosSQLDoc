@@ -68,7 +68,7 @@ export class Info {
 
             await Info.addVersion(description, versions);
 
-            start++;
+            start = comments.toLowerCase().indexOf(Tokens.VERSION, start) + Tokens.VERSION.length;
         }
 
         return versions;

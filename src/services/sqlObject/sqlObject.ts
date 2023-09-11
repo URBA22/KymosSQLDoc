@@ -3,6 +3,7 @@ import * as SqlObjectCore from './core';
 export interface ISqlObject {
     definition?: string;
     comments?: string;
+    schema: string;
     name?: string;
     type?: SqlObjectCore.Type;
     parameters?: SqlObjectCore.Parameter[];
@@ -20,6 +21,7 @@ export class SqlObject implements ISqlObject {
     private _definition?: string;
     private _comments?: string;
     private _name?: string;
+    private _schema = 'dbo';
     private _type?: SqlObjectCore.Type;
     private _parameters?: SqlObjectCore.Parameter[];
     private _dependecies?: SqlObjectCore.Dependecy[];
@@ -29,6 +31,7 @@ export class SqlObject implements ISqlObject {
 
     get definition(): string | undefined { return this._definition; }
     get comments(): string | undefined { return this._comments; }
+    get schema(): string { return this._schema; }
     get name(): string | undefined { return this._name; }
     get type(): SqlObjectCore.Type | undefined { return this._type; }
     get parameters(): SqlObjectCore.Parameter[] | undefined { return this._parameters; }
@@ -44,6 +47,7 @@ export class SqlObject implements ISqlObject {
     public async elaborate(): Promise<ISqlObject> {
         await this.splitDefinition();
         await this.getName();
+        await this.getSchema();
 
         const infoPromise = SqlObjectCore.Info.fromComments(this._comments ?? '');
 
@@ -91,6 +95,24 @@ export class SqlObject implements ISqlObject {
             start + 1,
             Math.min(endSpace, endBraket)
         );
+
+        this._name = this._name
+            ?.replace(/\[|\]/gm, '');
+    }
+
+    private async getSchema() {
+        if (this._name == undefined || this._name == '') {
+            return;
+        }
+
+        const split = this._name.split('.');
+
+        if (split.length < 2) {
+            return;
+        }
+
+        this._schema = split[0];
+        this._name = split[1];
     }
 
     private async getType(type?: string): Promise<SqlObjectCore.Type | undefined> {

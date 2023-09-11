@@ -27,6 +27,14 @@ const program = ProgramBuilder
     .build();
 
 
+// const fakeArgs = [
+//     '/usr/local/bin/node',
+//     '/Users/simone/Kymos/KymosSQLDoc/KymosSQLDoc/dist/index.js',
+//     '-s',
+//     // '../../ProgettiDatabase/DBO/'
+//     './tests/mockup/examples'
+// ];
+
 program.executeAsync(process.argv)
     .then(() => {
         console.log('Documentazione generata correttamente');

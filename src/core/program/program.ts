@@ -5,6 +5,8 @@ import { Root } from '../fsmanager/core/Root';
 import { Directory } from '../fsmanager/core/Directory';
 import fs from 'fs';
 import { InvalidPathError } from '../../services/guardClauses/errors';
+import { ISqlObject } from '../../services/sqlObject/sqlObject';
+import SqlObjectBuilder from '../../services/sqlObject/builder';
 
 
 export interface IProgram {
@@ -20,26 +22,44 @@ export class Program implements IProgram {
         this.fsManager = fsManager;
     }
 
-    private async createDocFolders(dir: Directory, dest: string) {
-        // TODO: use an object to store definitions (IParser) and locations, then writes file and directories
-        // { name: '', location '', definition: SQLObject,  documentation: '' } []
-        // For dependecies, use SQLObject.contains(objName: string);
-        // First, push all the definition
-        // After, parse all
-        // Then create files
+    private async createDocs(dir: Directory) {
+        const objectsOperations: Promise<ISqlObject>[] = [];
+        const readFileOperations: Promise<string>[] = [];
+        const createDocsOperations: Promise<ISqlObject[]>[] = [];
 
-        const fsManager = new FsManager();
+        for (const subDir of dir.children) {
+            createDocsOperations.push(this.createDocs(subDir));
+        }
 
-        await fsManager.writeDirectoryAsync(dest, dir.name);
+        for (const file of dir.files.filter(file => file.substring(file.indexOf('.')) == '.sql')) {
+            readFileOperations.push(this.fsManager.readFileAsync(dir.directory, file));
+        }
 
-        await this.createDocumentation(dir, dest + '/' + dir.name);
+        for (const readFileOperation of await Promise.allSettled(readFileOperations)) {
+            const content = readFileOperation.status === 'fulfilled' ? readFileOperation.value : '';
+            objectsOperations.push(SqlObjectBuilder.createSqlObject()
+                .fromDefinition(content)
+                .build()
+                .elaborate());
+        }
 
-        const createDocFolderThreads: Promise<void>[] = [];
-
-        for (const child of dir.children)
-            createDocFolderThreads.push(this.createDocFolders(child, dest + '/' + dir.name));
-
-        Promise.all(createDocFolderThreads);
+        let objects: ISqlObject[] = (await Promise.allSettled(objectsOperations))
+            .map(objectOperation => {
+                if (objectOperation.status === 'fulfilled')
+                    return objectOperation.value;
+            })
+            .filter(object => object !== undefined) as ISqlObject[];
+        
+        const objectsSubFolders = (await Promise.allSettled(createDocsOperations))
+            .map(objectOperation => {
+                if (objectOperation.status === 'fulfilled')
+                    return objectOperation.value;
+            })
+            .filter(object => object !== undefined && object.length == 0) as ISqlObject[][];
+        
+        objects = objects.concat(...objectsSubFolders); 
+        
+        return objects;
     }
 
 
@@ -90,6 +110,6 @@ export class Program implements IProgram {
         if (!fs.existsSync(await FsManager.mergePath(destination, 'docs/')))
             await this.fsManager.writeDirectoryAsync(destination, 'docs');
 
-        return this.createDocFolders(sourcePaths.directory, destination + '/docs/');
+        const objects = await this.createDocs(sourcePaths.directory); //, destination + '/docs/');
     }
 }

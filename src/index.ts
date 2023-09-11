@@ -14,7 +14,6 @@ const command = CommandBuilder
     // .withOption('-f, --format <value>', 'Chose between html and md, or both. Default is md')
     .build();
 
-
 const fsManager = FsManagerBuilder
     .createFsManager()
     .build();

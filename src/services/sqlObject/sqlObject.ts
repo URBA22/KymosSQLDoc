@@ -12,7 +12,7 @@ export interface ISqlObject {
     info?: SqlObjectCore.Info;
     steps?: SqlObjectCore.Step;
 
-    elaborate(): Promise<ISqlObject>;
+    elaborateAsync(): Promise<ISqlObject>;
 }
 
 export class SqlObject implements ISqlObject {
@@ -23,11 +23,11 @@ export class SqlObject implements ISqlObject {
     private _name?: string;
     private _schema = 'dbo';
     private _type?: SqlObjectCore.Type;
-    private _parameters?: SqlObjectCore.Parameter[];
-    private _dependecies?: SqlObjectCore.Dependecy[];
-    private _usages?: SqlObjectCore.Dependecy[];
+    private _parameters?: SqlObjectCore.Parameter[]; // TODO
+    private _dependecies?: SqlObjectCore.Dependecy[]; // TODO
+    private _usages?: SqlObjectCore.Dependecy[]; // TODO
     private _info?: SqlObjectCore.Info;
-    private _steps?: SqlObjectCore.Step;
+    private _steps?: SqlObjectCore.Step; // TODO
 
     get definition(): string | undefined { return this._definition; }
     get comments(): string | undefined { return this._comments; }
@@ -44,7 +44,7 @@ export class SqlObject implements ISqlObject {
         this._rawDefinition = definition;
     }
 
-    public async elaborate(): Promise<ISqlObject> {
+    public async elaborateAsync(): Promise<ISqlObject> {
         await this.splitDefinition();
         await this.getName();
         await this.getSchema();

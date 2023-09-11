@@ -22,13 +22,13 @@ export class Program implements IProgram {
         this.fsManager = fsManager;
     }
 
-    private async createDocs(dir: Directory) {
+    private async createSqlObjects(dir: Directory) {
         const objectsOperations: Promise<ISqlObject>[] = [];
         const readFileOperations: Promise<string>[] = [];
         const createDocsOperations: Promise<ISqlObject[]>[] = [];
 
         for (const subDir of dir.children) {
-            createDocsOperations.push(this.createDocs(subDir));
+            createDocsOperations.push(this.createSqlObjects(subDir));
         }
 
         for (const file of dir.files.filter(file => file.substring(file.indexOf('.')) == '.sql')) {
@@ -40,7 +40,7 @@ export class Program implements IProgram {
             objectsOperations.push(SqlObjectBuilder.createSqlObject()
                 .fromDefinition(content)
                 .build()
-                .elaborate());
+                .elaborateAsync());
         }
 
         let objects: ISqlObject[] = (await Promise.allSettled(objectsOperations))
@@ -77,10 +77,10 @@ export class Program implements IProgram {
 
     // }
 
-    private async writeFile(dest: string, file: string, parsedDocumentation: string): Promise<void> {
-        if (parsedDocumentation.replace(/((\n)|(\t)|(\r)|[ ]|-)+/g, ' ') != '')
-            this.fsManager.writeFileAsync(dest + '/', file.replace('.sql', '.md'), parsedDocumentation);
-    }
+    // private async writeFile(dest: string, file: string, parsedDocumentation: string): Promise<void> {
+    //     if (parsedDocumentation.replace(/((\n)|(\t)|(\r)|[ ]|-)+/g, ' ') != '')
+    //         this.fsManager.writeFileAsync(dest + '/', file.replace('.sql', '.md'), parsedDocumentation);
+    // }
 
 
 
@@ -110,6 +110,9 @@ export class Program implements IProgram {
         if (!fs.existsSync(await FsManager.mergePath(destination, 'docs/')))
             await this.fsManager.writeDirectoryAsync(destination, 'docs');
 
-        const objects = await this.createDocs(sourcePaths.directory); //, destination + '/docs/');
+        const objects = await this.createSqlObjects(sourcePaths.directory); //, destination + '/docs/');
+
+
+        // TODO: wirite .md doc files and directories
     }
 }

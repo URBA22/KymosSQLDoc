@@ -23,11 +23,11 @@ export class SqlObject implements ISqlObject {
     private _name?: string;
     private _schema = 'dbo';
     private _type?: SqlObjectCore.Type;
-    private _parameters?: SqlObjectCore.Parameter[]; // TODO
+    private _parameters?: SqlObjectCore.Parameter[]; // TODO - to test
     private _dependecies?: SqlObjectCore.Dependecy[]; // TODO
     private _usages?: SqlObjectCore.Dependecy[]; // TODO
     private _info?: SqlObjectCore.Info;
-    private _steps?: SqlObjectCore.Step; // TODO
+    private _steps?: SqlObjectCore.Step; // TODO 
 
     get definition(): string | undefined { return this._definition; }
     get comments(): string | undefined { return this._comments; }
@@ -50,7 +50,7 @@ export class SqlObject implements ISqlObject {
         await this.getSchema();
 
         // 230912 - Marco: add request parameters
-        const parametersPromise = SqlObjectCore.Parameter.fromDefinition(this._definition ?? '');
+        const parametersPromise = this.getParameter();
         this._parameters = await parametersPromise;
 
 
@@ -59,6 +59,17 @@ export class SqlObject implements ISqlObject {
         this._info = await infoPromise;
 
         return this;
+    }
+
+    private async getParameter() {
+        if (this._definition == undefined || this._definition == '') {
+            return;
+        }
+        if (!(this._type == SqlObjectCore.Type.STORED_PROCEDURE || this._type == SqlObjectCore.Type.FUNCTION)) {
+            return;
+        }
+        return SqlObjectCore.Parameter.fromDefinition(this._definition);
+
     }
 
     private async getName() {

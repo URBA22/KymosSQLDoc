@@ -49,9 +49,15 @@ export class SqlObject implements ISqlObject {
         await this.getName();
         await this.getSchema();
 
+        // 230912 - Marco: add request parameters
+        const parametersPromise = SqlObjectCore.Parameter.fromDefinition(this._definition ?? '');
+        this._parameters = await parametersPromise;
+
+
         const infoPromise = SqlObjectCore.Info.fromComments(this._comments ?? '');
 
         this._info = await infoPromise;
+
         return this;
     }
 

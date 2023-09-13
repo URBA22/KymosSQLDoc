@@ -1,12 +1,15 @@
-import { Type } from './type';
+import { ISqlObject } from '../sqlObject';
 
 
 export class Dependecy {
-    public name: string;
-    public type: Type;
 
-    constructor(name: string, type: Type) {
-        this.name = name;
-        this.type = type;
+    private constructor() {
+    }
+
+    public static async fromObject(sqlObject: ISqlObject[]) {
+    }
+
+    private static async getDependecy(dependecyStr: string) {
+
     }
 }

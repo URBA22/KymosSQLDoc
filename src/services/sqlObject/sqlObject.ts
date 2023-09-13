@@ -1,3 +1,4 @@
+import { Guard } from '../guardClauses';
 import * as SqlObjectCore from './core';
 
 export interface ISqlObject {
@@ -24,8 +25,8 @@ export class SqlObject implements ISqlObject {
     private _schema = 'dbo';
     private _type?: SqlObjectCore.Type;
     private _parameters?: SqlObjectCore.Parameter[]; // TODO - to test
-    private _dependecies?: SqlObjectCore.Dependecy[]; // TODO
-    private _usages?: SqlObjectCore.Dependecy[]; // TODO
+    private _dependecies?: ISqlObject[]; // TODO
+    private _usages?: ISqlObject[]; // TODO
     private _info?: SqlObjectCore.Info;
     private _steps?: SqlObjectCore.Step; // TODO 
 
@@ -49,27 +50,21 @@ export class SqlObject implements ISqlObject {
         await this.getName();
         await this.getSchema();
 
-        // 230912 - Marco: add request parameters
         const parametersPromise = this.getParameter();
-        this._parameters = await parametersPromise;
-
-
         const infoPromise = SqlObjectCore.Info.fromComments(this._comments ?? '');
 
+        this._parameters = await parametersPromise;
         this._info = await infoPromise;
 
         return this;
     }
 
     private async getParameter() {
-        if (this._definition == undefined || this._definition == '') {
-            return;
-        }
-        if (!(this._type == SqlObjectCore.Type.STORED_PROCEDURE || this._type == SqlObjectCore.Type.FUNCTION)) {
-            return;
-        }
-        return SqlObjectCore.Parameter.fromDefinition(this._definition);
+        Guard.Against.NullOrEmpty(await this._definition, 'definition');
+        //if (!(this._type == SqlObjectCore.Type.STORED_PROCEDURE || this._type == SqlObjectCore.Type.FUNCTION)) return;
 
+        return SqlObjectCore.Parameter.fromDefinition(await this._definition as string);
+        
     }
 
     private async getName() {

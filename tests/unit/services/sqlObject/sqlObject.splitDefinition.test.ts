@@ -28,7 +28,7 @@ describe('SqlObject SplitDefinition', () => {
             .createSqlObject()
             .fromDefinition(definition)
             .build()
-            .elaborate();
+            .elaborateAsync();
 
         expect(sqlObject.definition).toEqual(expectedDefinition);
         expect(sqlObject.comments).toEqual(expectedComments);

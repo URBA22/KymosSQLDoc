@@ -17,13 +17,13 @@ CREATE OR ALTER PROCEDURE [dbo].[StpXImptPdm_Articolo] (
     @Prova DECIMAL(18, 8),
 	@KYStato INT = NULL OUTPUT,
 	@KYMsg NVARCHAR(MAX) = NULL OUTPUT,
-	@KYRes INT = NULL,
+    @NULLKy BIT,
+ 	@KYRes INT = NULL,
 	@KYRequest UNIQUEIDENTIFIER = NULL OUTPUT,
     @Debug BIT = 0
 )
 AS
-BEGIN
-	-- Return -1: Normal; return -2: Refresh data; return -3: Chiude la maschera; -4: Non fa nulla
+BEGIN -- Return -1: Normal; return -2: Refresh data; return -3: Chiude la maschera; -4: Non fa nulla
 	-- Tipo Messaggio: INF Informativo, ALR Allert, WRN Warning, QST Question
 	SET NOCOUNT ON
 

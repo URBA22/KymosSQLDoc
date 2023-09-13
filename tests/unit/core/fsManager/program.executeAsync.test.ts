@@ -35,8 +35,8 @@ describe('Utilities ExecuteAsync', () => {
 
     test('Should work fine', async () => {
         await program.executeAsync([
-            'C:\\Program Files\\nodejs\\node.exe',
-            'C:\\Users\\HP\\Desktop\\SCUOLA\\pcto\\KymosSQLDoc\\dist\\index.js',
+            '/usr/local/bin/node',
+            '/Users/marco/Documents/Kymos/KymosSQLDoc/src/index.js',
             '-s',
             './tests/mockup/examples',
             '-o',

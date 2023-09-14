@@ -25,10 +25,7 @@ describe('SqlObject Parameter fromDefinition ', () => {
         const expectedResult = ['IdArticolo', 'SysUser', 'Prova', 'KYStato', 'KYMsg', 'NULLKy', 'KYRes', 'KYRequest', 'Debug'];
         expect(sqlObject.name).toEqual('StpXImptPdm_Articolo');
         let i = 0;
-        let str =  '';
         parameters.forEach(param => {
-            if(param.default == undefined)str += '' + param.name + ' ' + param.type + ' ' + param.nullable + ' ' + param.output + '\n'; 
-            else str += '' + param.name + ' ' + param.type + ' ' + param.nullable + ' ' + param.output + ' ' + param.default + '\n'; 
             expect(param.name).toEqual(expectedResult[i++]);
         });
 

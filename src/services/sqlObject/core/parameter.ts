@@ -16,8 +16,8 @@ export class Parameter {
 
     /**
      * 
-     * @param definition 
-     * @returns 
+     * @param definition of SqlObject.definition
+     * @returns array of parameters
      */
     public static async fromDefinition(definition: string) {
         //get block of header param

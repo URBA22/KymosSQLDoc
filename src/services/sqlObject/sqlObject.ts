@@ -45,7 +45,10 @@ export class SqlObject implements ISqlObject {
     constructor(definition: string) {
         this._rawDefinition = definition;
     }
-
+    /**
+     * elaborate sql rawDefinition
+     * @returns ISqlObject from definition
+     */
     public async elaborateAsync(): Promise<ISqlObject> {
         await this.splitDefinition();
         await this.getName();
@@ -69,6 +72,10 @@ export class SqlObject implements ISqlObject {
         
     }
 
+    /**
+     * elaborate name and type from sql definition
+     * @returns 
+     */
     private async getName() {
         if (this._definition == undefined || this._definition == '') {
             return;

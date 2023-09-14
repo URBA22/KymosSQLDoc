@@ -32,9 +32,6 @@ describe('SqlObject Parameter fromDefinition ', () => {
             expect(param.name).toEqual(expectedResult[i++]);
         });
 
-        const fsmanager = new FsManager();
-        await fsmanager.writeFileAsync('/Users/marco/Documents/Kymos/', 'testParam.txt', str);
-
         
     });
 });

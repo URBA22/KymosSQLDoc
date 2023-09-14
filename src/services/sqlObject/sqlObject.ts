@@ -1,5 +1,6 @@
 import { Guard } from '../guardClauses';
 import * as SqlObjectCore from './core';
+import { FsManager } from 'src/core/fsmanager/fsmanager';
 
 export interface ISqlObject {
     definition?: string;
@@ -61,8 +62,9 @@ export class SqlObject implements ISqlObject {
 
     private async getParameter() {
         Guard.Against.NullOrEmpty(await this._definition, 'definition');
-        //if (!(this._type == SqlObjectCore.Type.STORED_PROCEDURE || this._type == SqlObjectCore.Type.FUNCTION)) return;
-
+        // Verify this._type = undefined
+        // Guard.Against.NullOrEmpty(await this._type, 'type');
+        // if (!((await this._type) == SqlObjectCore.Type.STORED_PROCEDURE || (await this._type) == SqlObjectCore.Type.FUNCTION))  return;
         return SqlObjectCore.Parameter.fromDefinition(await this._definition as string);
         
     }
@@ -94,9 +96,9 @@ export class SqlObject implements ISqlObject {
         const typeString = this.definition?.substring(
             start + 1,
             Math.min(precStart + 1, start)
-        );
+        ).trim();
+        
         this._type = await this.getType(typeString);
-
         let endSpace = this._definition.indexOf(' ', start + 2);
         if (endSpace <= 0) endSpace = Number.POSITIVE_INFINITY;
 

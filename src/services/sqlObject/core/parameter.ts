@@ -1,5 +1,3 @@
-import { stat } from "fs";
-import { ArgumentNullOrEmptyError } from "src/services/guardClauses";
 
 export class Parameter {
     public name: string;
@@ -43,7 +41,7 @@ export class Parameter {
         const parameter: Parameter = {
             name: await Parameter.getName(parameterStr),
             type: await Parameter.getType(parameterStr),
-            nullable: parameterStr.indexOf(' NULL') > 0,
+            nullable: (parameterStr.indexOf(' NULL') > 0 && parameterStr.indexOf('NOT NULL') < 0),
             output: (parameterStr.indexOf(' OUT') > 0 || parameterStr.indexOf(' OUTPUT') > 0),
             default: await Parameter?.getDefault(parameterStr)
         };
@@ -62,8 +60,8 @@ export class Parameter {
         const start = parameterStr.indexOf(' '); // @IdArticolo_NVARCHAR(50) = NULL OUT
         const end = parameterStr.indexOf('='); // @IdArticolo NVARCHAR(50, 18)_= NULL OUT
         if (start < 0) return ''; //Something went wrong
-        if(end > 0) return parameterStr.substring(start, end - 1).trim();
-        return parameterStr.substring(start).trim();
+        if(end > 0) return parameterStr.substring(start, end - 1).replace('NOT NULL', '').replace('NULL', '').replace('OUTPUT', '').replace('OUT', '').trim();
+        return parameterStr.substring(start).replace('NOT NULL', '').replace('NULL', '').replace('OUTPUT', '').replace('OUT', '').trim();
     }
 
     private static async getDefault(parameterStr: string) {

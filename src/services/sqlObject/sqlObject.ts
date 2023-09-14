@@ -1,6 +1,5 @@
 import { Guard } from '../guardClauses';
 import * as SqlObjectCore from './core';
-import { FsManager } from 'src/core/fsmanager/fsmanager';
 
 export interface ISqlObject {
     definition?: string;
@@ -63,7 +62,7 @@ export class SqlObject implements ISqlObject {
         return this;
     }
 
-    private async getParameter() {
+    private async getParameters() {
         Guard.Against.NullOrEmpty(await this._definition, 'definition');
         // Verify this._type = undefined
         // Guard.Against.NullOrEmpty(await this._type, 'type');

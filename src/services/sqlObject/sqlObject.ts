@@ -64,7 +64,6 @@ export class SqlObject implements ISqlObject {
 
     private async getParameters() {
         Guard.Against.NullOrEmpty(await this._definition, 'definition');
-        // Verify this._type = undefined
         Guard.Against.NullOrEmpty(await this._type, 'type');
         if (!((await this._type) == SqlObjectCore.Type.STORED_PROCEDURE || (await this._type) == SqlObjectCore.Type.FUNCTION))  return;
         return SqlObjectCore.Parameter.fromDefinition(await this._definition as string);

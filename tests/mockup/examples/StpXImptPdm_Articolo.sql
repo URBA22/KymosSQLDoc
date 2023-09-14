@@ -15,6 +15,8 @@ CREATE OR ALTER PROCEDURE [dbo].[StpXImptPdm_Articolo] (
 	@IdArticolo NVARCHAR(50) = NULL OUT,
 	@SysUser NVARCHAR(256),
     @Prova DECIMAL(18, 8),
+    @Prova1 DECIMAL(18, 8) = NULL,
+    @Prova2 DECIMAL(18, 8) NULL,
 	@KYStato INT NULL = OUTPUT,
 	@KYMsg NVARCHAR(MAX) = NULL OUTPUT,
     @NULLKy BIT,

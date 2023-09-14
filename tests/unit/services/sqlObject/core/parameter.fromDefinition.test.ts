@@ -45,6 +45,20 @@ describe('SqlObject Parameter fromDefinition ', () => {
                 default: undefined,
                 description: undefined
             },{
+                name :'Prova1', 
+                type: 'DECIMAL(18, 8)',
+                nullable: true,
+                output: false,
+                default: undefined,
+                description: undefined
+            },{
+                name :'Prova2', 
+                type: 'DECIMAL(18, 8)',
+                nullable: true,
+                output: false,
+                default: undefined,
+                description: undefined
+            },{
                 name :'KYStato', 
                 type: 'INT',
                 nullable: true,

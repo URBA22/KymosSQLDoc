@@ -8,9 +8,9 @@ describe('SqlObject Parameter fromDefinition ', () => {
 
     let sqlObject: ISqlObject;
 
-    beforeAll(async() => {
+    beforeAll(async () => {
         const fsmanager = new FsManager();
-        const rawDefinition = await fsmanager.readFileAsync('/Users/marco/Documents/Kymos/KymosSQLDoc/tests/mockup/examples/', 'StpXImptPdm_Articolo.sql');
+        const rawDefinition = await fsmanager.readFileAsync('./tests/mockup/examples/', 'StpXImptPdm_Articolo.sql');
 
         sqlObject = await SqlObjectBuilder
             .createSqlObject()
@@ -20,81 +20,81 @@ describe('SqlObject Parameter fromDefinition ', () => {
     });
 
     test('Should fromDefinition parse store procedure and functions parameters from definition', async () => {
-        
+
         const parameters: Parameter[] = await sqlObject.parameters as Parameter[];
         const expectedResult = [
             {
-                name :'IdArticolo', 
+                name: 'IdArticolo',
                 type: 'NVARCHAR(50)',
                 nullable: true,
                 output: true,
                 default: undefined,
                 description: undefined
-            },{
-                name :'SysUser', 
+            }, {
+                name: 'SysUser',
                 type: 'NVARCHAR(256)',
                 nullable: false,
                 output: false,
                 default: undefined,
                 description: undefined
-            },{
-                name :'Prova', 
+            }, {
+                name: 'Prova',
                 type: 'DECIMAL(18, 8)',
                 nullable: false,
                 output: false,
                 default: undefined,
                 description: undefined
-            },{
-                name :'Prova1', 
+            }, {
+                name: 'Prova1',
                 type: 'DECIMAL(18, 8)',
                 nullable: true,
                 output: false,
                 default: undefined,
                 description: undefined
-            },{
-                name :'Prova2', 
+            }, {
+                name: 'Prova2',
                 type: 'DECIMAL(18, 8)',
                 nullable: true,
                 output: false,
                 default: undefined,
                 description: undefined
-            },{
-                name :'KYStato', 
+            }, {
+                name: 'KYStato',
                 type: 'INT',
                 nullable: true,
                 output: true,
                 default: undefined,
                 description: undefined
-            },{
-                name :'KYMsg', 
+            }, {
+                name: 'KYMsg',
                 type: 'NVARCHAR(MAX)',
                 nullable: true,
                 output: true,
                 default: undefined,
                 description: undefined
-            },{
-                name :'NULLKy', 
+            }, {
+                name: 'NULLKy',
                 type: 'BIT',
                 nullable: false,
                 output: false,
                 default: undefined,
                 description: undefined
-            },{
-                name :'KYRes', 
+            }, {
+                name: 'KYRes',
                 type: 'INT',
                 nullable: true,
                 output: false,
                 default: undefined,
                 description: undefined
-            },{
-                name :'KYRequest', 
+            }, {
+                name: 'KYRequest',
                 type: 'UNIQUEIDENTIFIER',
                 nullable: true,
                 output: true,
                 default: undefined,
                 description: undefined
-            },{
-                name :'Debug', 
+            }, {
+                name: 'Debug',
                 type: 'BIT',
                 nullable: false,
                 output: false,
@@ -108,6 +108,6 @@ describe('SqlObject Parameter fromDefinition ', () => {
             expect(param).toEqual(expectedResult[i++]);
         });
 
-        
+
     });
 });

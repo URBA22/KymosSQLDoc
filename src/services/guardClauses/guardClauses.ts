@@ -17,6 +17,12 @@ export namespace Guard {
             }
         }
 
+        static NullOrWhiteSpace(object: unknown, name: string) {
+            if (object === null || object === undefined || object === '' || object === ' ') {
+                throw new ArgumentNullOrEmptyError(name);
+            }
+        }
+
         static InvalidPath(path: string) {
             this.NullOrEmpty(path, 'path');
 

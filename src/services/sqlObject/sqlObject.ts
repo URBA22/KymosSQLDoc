@@ -63,11 +63,11 @@ export class SqlObject implements ISqlObject {
     }
 
     private async getParameters() {
-        Guard.Against.NullOrEmpty(await this._definition, 'definition');
-        Guard.Against.NullOrEmpty(await this._type, 'type');
-        if (!((await this._type) == SqlObjectCore.Type.STORED_PROCEDURE || (await this._type) == SqlObjectCore.Type.FUNCTION))  return;
-        return SqlObjectCore.Parameter.fromDefinition(await this._definition as string);
-        
+        Guard.Against.NullOrEmpty(this._definition, 'definition');
+        Guard.Against.NullOrEmpty(this._type, 'type');
+        if (!((this._type) == SqlObjectCore.Type.STORED_PROCEDURE || (this._type) == SqlObjectCore.Type.FUNCTION)) return;
+        return SqlObjectCore.Parameter.fromDefinition(this._definition as string);
+
     }
 
     /**
@@ -87,7 +87,7 @@ export class SqlObject implements ISqlObject {
             .toUpperCase()
             .indexOf('CREATE');
 
-        if (indexAlter <= 0 && indexCreate <= 0) {
+        if (indexAlter < 0 && indexCreate < 0) {
             return;
         }
 
@@ -102,7 +102,7 @@ export class SqlObject implements ISqlObject {
             start + 1,
             Math.min(precStart + 1, start)
         ).trim();
-        
+
         this._type = await this.getType(typeString);
         let endSpace = this._definition.indexOf(' ', start + 2);
         if (endSpace <= 0) endSpace = Number.POSITIVE_INFINITY;

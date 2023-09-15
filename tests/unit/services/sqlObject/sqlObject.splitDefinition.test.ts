@@ -4,6 +4,8 @@ describe('SqlObject SplitDefinition', () => {
 
     test('Should split definition and comments', async () => {
         const definition = `
+            CREATE PROCEDURE [dbo].[StpProva]
+            AS BEGIN
             aaa
             bbb cccc
             /*   commento 1
@@ -13,8 +15,9 @@ describe('SqlObject SplitDefinition', () => {
            fff /*
            ultimo commento
            ciaociao
+           END
         `;
-        const expectedDefinition = 'aaa bbb cccc ddd eee fff';
+        const expectedDefinition = 'CREATE PROCEDURE [dbo].[StpProva] AS BEGIN aaa bbb cccc ddd eee fff';
         const expectedComments = `/*   commento 1
                 -- multilinea
             */
@@ -22,13 +25,14 @@ describe('SqlObject SplitDefinition', () => {
 
 /*
            ultimo commento
-           ciaociao`;
+           ciaociao
+           END`;
 
         const sqlObject = await SqlObjectBuilder
             .createSqlObject()
             .fromDefinition(definition)
             .build()
-            .elaborate();
+            .elaborateAsync();
 
         expect(sqlObject.definition).toEqual(expectedDefinition);
         expect(sqlObject.comments).toEqual(expectedComments);

@@ -24,7 +24,7 @@ describe('Command tests', () => {
     test('Options parsing', async () => {
         const argvTest = [
             '/usr/local/bin/node',
-            '/Users/simone/Kymos/KymosSQLDoc/KymosSQLDoc/dist/index.js',
+            '/Users/marco/Documents/Kymos/KymosSQLDoc/src/index.js',
             '-t',
             'Test 123'
         ];
@@ -39,7 +39,7 @@ describe('Command tests', () => {
     test('Options parsing', async () => {
         const argvTest = [
             '/usr/local/bin/node',
-            '/Users/simone/Kymos/KymosSQLDoc/KymosSQLDoc/dist/index.js',
+            '/Users/marco/Documents/Kymos/KymosSQLDoc/src/index.js',
             '-p',
             'Test 123'
         ];

@@ -1,3 +1,4 @@
+import { Guard } from '../guardClauses';
 import * as SqlObjectCore from './core';
 
 export interface ISqlObject {
@@ -23,11 +24,11 @@ export class SqlObject implements ISqlObject {
     private _name?: string;
     private _schema = 'dbo';
     private _type?: SqlObjectCore.Type;
-    private _parameters?: SqlObjectCore.Parameter[]; // TODO
-    private _dependecies?: SqlObjectCore.Dependecy[]; // TODO
-    private _usages?: SqlObjectCore.Dependecy[]; // TODO
+    private _parameters?: SqlObjectCore.Parameter[]; // TODO - to test
+    private _dependecies?: ISqlObject[]; // TODO
+    private _usages?: ISqlObject[]; // TODO
     private _info?: SqlObjectCore.Info;
-    private _steps?: SqlObjectCore.Step; // TODO
+    private _steps?: SqlObjectCore.Step; // TODO 
 
     get definition(): string | undefined { return this._definition; }
     get comments(): string | undefined { return this._comments; }
@@ -43,18 +44,36 @@ export class SqlObject implements ISqlObject {
     constructor(definition: string) {
         this._rawDefinition = definition;
     }
-
+    /**
+     * elaborate sql rawDefinition
+     * @returns ISqlObject from definition
+     */
     public async elaborateAsync(): Promise<ISqlObject> {
         await this.splitDefinition();
         await this.getName();
         await this.getSchema();
 
+        const parametersPromise = this.getParameters();
         const infoPromise = SqlObjectCore.Info.fromComments(this._comments ?? '');
 
+        this._parameters = await parametersPromise;
         this._info = await infoPromise;
+
         return this;
     }
 
+    private async getParameters() {
+        Guard.Against.NullOrEmpty(this._definition, 'definition');
+        Guard.Against.NullOrEmpty(this._type, 'type');
+        if (!((this._type) == SqlObjectCore.Type.STORED_PROCEDURE || (this._type) == SqlObjectCore.Type.FUNCTION)) return;
+        return SqlObjectCore.Parameter.fromDefinition(this._definition as string);
+
+    }
+
+    /**
+     * elaborate name and type from sql definition
+     * @returns 
+     */
     private async getName() {
         if (this._definition == undefined || this._definition == '') {
             return;
@@ -68,7 +87,7 @@ export class SqlObject implements ISqlObject {
             .toUpperCase()
             .indexOf('CREATE');
 
-        if (indexAlter <= 0 && indexCreate <= 0) {
+        if (indexAlter < 0 && indexCreate < 0) {
             return;
         }
 
@@ -82,9 +101,9 @@ export class SqlObject implements ISqlObject {
         const typeString = this.definition?.substring(
             start + 1,
             Math.min(precStart + 1, start)
-        );
-        this._type = await this.getType(typeString);
+        ).trim();
 
+        this._type = await this.getType(typeString);
         let endSpace = this._definition.indexOf(' ', start + 2);
         if (endSpace <= 0) endSpace = Number.POSITIVE_INFINITY;
 

@@ -1,13 +1,9 @@
-import { mkdirSync, rmdirSync, writeFileSync, rmSync, existsSync } from 'fs';
-import { Root } from 'src/core/fsmanager/core/Root';
-import { FsManager } from 'src/core/fsmanager/fsmanager';
-import { InvalidPathError } from 'src/services/guardClauses/errors';
 import { describe, beforeAll, test, expect } from '@jest/globals';
 
 describe('FsManager ReadDirectoryAsync', () => {
-    const absPath = 'tests/mockup';
+    // const absPath = 'tests/mockup';
 
-    const relPath = './tests/mockup';
+    // const relPath = './tests/mockup';
 
     beforeAll(() => {
         // if (!existsSync('./tests/mockup/testpath'))

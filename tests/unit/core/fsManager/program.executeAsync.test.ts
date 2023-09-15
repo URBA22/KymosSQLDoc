@@ -1,5 +1,4 @@
 import { CommandBuilder, FsManagerBuilder, ProgramBuilder } from 'src/core';
-import fs, { rmSync, unlinkSync } from 'fs';
 
 describe('Utilities ExecuteAsync', () => {
 

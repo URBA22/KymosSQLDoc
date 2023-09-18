@@ -11,7 +11,7 @@ GO
  * @version sim 230417 Creazione
  * @version dav 230517 Aggiornamento
  **/
-CREATE OR ALTER PROCEDURE [dbo].[StpXImptPdm_Articolo] (
+CREATE OR ALTER PROCEDURE [dbo].[StpTestDependecy] (
 	@IdArticolo NVARCHAR(50) = NULL OUT,
 	@SysUser NVARCHAR(256),
 	@KYStato INT = NULL OUTPUT,

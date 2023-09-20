@@ -23,15 +23,33 @@ export class Dependecy {
 
     private static async extractTbAndVst(sqlObjDefinition: string):Promise<string[]>{
         const dependecys:Set<string> = new Set();
+
         let start = 0;
         while((start = sqlObjDefinition.toUpperCase().indexOf(' FROM ', start + 1)) > 0){
-            const toAdd = sqlObjDefinition.substring(sqlObjDefinition.indexOf(' ', start + 1) + 1, sqlObjDefinition.indexOf(' ', start + 6));
-            dependecys.add(toAdd);
+            const toAdd = sqlObjDefinition.substring(sqlObjDefinition.indexOf(' ', start + 1) + 1, sqlObjDefinition.indexOf(' ', start + 6)).replace('dbo.', '').replace(/\([\w]{0,100}[,]/, '').replace(')', '');
+            dependecys.add(toAdd.trim());
         }
 
         start = 0;
         while((start = sqlObjDefinition.toUpperCase().indexOf(' JOIN ', start + 1)) > 0){
-            const toAdd = sqlObjDefinition.substring(sqlObjDefinition.indexOf(' ', start + 1) + 1, sqlObjDefinition.indexOf(' ', start + 6));
+            const toAdd = sqlObjDefinition.substring(sqlObjDefinition.indexOf(' ', start + 1) + 1, sqlObjDefinition.indexOf(' ', start + 6)).replace('dbo.', '').replace(/\([\w]{0,100}[,]/, '').replace(')', '');
+            dependecys.add(toAdd.trim());
+        }
+
+        start = 0;
+        while((start = sqlObjDefinition.toUpperCase().indexOf(' INSERT INTO ', start + 1)) > 0){
+            const toAdd = sqlObjDefinition.substring(sqlObjDefinition.indexOf(' ', start + 8) + 1, sqlObjDefinition.indexOf(' ', start + 13)).replace('dbo.', '').replace(/\([\w]{0,100}[,]/, '').replace(')', '');
+            dependecys.add(toAdd.trim());
+        }
+        
+        start = 0;
+        while((start = sqlObjDefinition.toUpperCase().indexOf(' UPDATE ', start + 1)) > 0){
+            const toAdd = sqlObjDefinition.substring(sqlObjDefinition.indexOf(' ', start + 1) + 1, sqlObjDefinition.indexOf(' ', start + 8)).replace('dbo.', '').replace(/\([\w]{0,100}[,]/, '').replace(')', '');
+            dependecys.add(toAdd.trim());
+        }
+        start = 0;
+        while((start = sqlObjDefinition.toUpperCase().indexOf(' DELETE ', start + 1)) > 0){
+            const toAdd = sqlObjDefinition.substring(sqlObjDefinition.indexOf(' ', start + 1) + 1, sqlObjDefinition.indexOf(' ', start + 8)).replace('dbo.', '').replace(/\([\w]{0,100}[,]/, '').replace(')', '');
             dependecys.add(toAdd.trim());
         }
         return Array.from(dependecys);
@@ -42,13 +60,13 @@ export class Dependecy {
         const dependecys:Set<string> = new Set();
         let start = 0;
         while((start = sqlObjDefinition.toUpperCase().indexOf(' EXECUTE ', start + 1)) > 0){
-            const toAdd = sqlObjDefinition.substring(sqlObjDefinition.indexOf(' ', start + 1) + 1, sqlObjDefinition.indexOf(' ', start + 9)).replace('dbo.', '');
+            const toAdd = sqlObjDefinition.substring(sqlObjDefinition.indexOf(' ', start + 1) + 1, sqlObjDefinition.indexOf(' ', start + 9)).replace('dbo.', '').replace(/\([\w]{0,100}[,]/, '').replace(')', '');
             dependecys.add(toAdd.trim());
         }
         
         start = 0;
         while((start = sqlObjDefinition.toUpperCase().indexOf(' EXEC ', start + 1)) > 0){
-            const toAdd = sqlObjDefinition.substring(sqlObjDefinition.indexOf(' ', start + 1) + 1, sqlObjDefinition.indexOf(' ', start + 9)).replace('dbo.', '');
+            const toAdd = sqlObjDefinition.substring(sqlObjDefinition.indexOf(' ', start + 1) + 1, sqlObjDefinition.indexOf(' ', start + 9)).replace('dbo.', '').replace(/\([\w]{0,100}[,]/, '').replace(')', '');
             dependecys.add(toAdd.trim());
         }
 

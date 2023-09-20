@@ -6,36 +6,33 @@ export class Dependecy {
     }
 
     public static async fromObjects(sqlObjects: ISqlObject[]) {
-        //                 async ??
-        sqlObjects.forEach(async sqlObject =>{
-            
-            await this.getDependecys(sqlObject.definition as string, sqlObject, sqlObjects);
+        await sqlObjects.forEach(sqlObject =>{
+            this.getDependecys(sqlObject.definition as string, sqlObject, sqlObjects);
         });
+        return;
     }
 
     private static async getDependecys(sqlObjDefinition : string, sqlObject: ISqlObject, sqlObjects: ISqlObject[]) {
         if(sqlObjDefinition == undefined) return;
-        if(sqlObject.dependecies == undefined) sqlObject.dependecies = [];
         const extTbAndVst:Promise<string[]> = this.extractTbAndVst(sqlObjDefinition);
         const extStpAndFnc:Promise<string[]> = this.extractStpAndFnc(sqlObjDefinition);
-        const dependecys:string[] = (await extStpAndFnc).concat(await extTbAndVst);
+        const dependecys:string[] = (await extStpAndFnc).concat(await extTbAndVst);        
         this.areValidDependecys(dependecys, sqlObject, sqlObjects);
+        return;
     }
 
     private static async extractTbAndVst(sqlObjDefinition: string):Promise<string[]>{
         const dependecys:Set<string> = new Set();
         let start = 0;
         while((start = sqlObjDefinition.toUpperCase().indexOf(' FROM ', start + 1)) > 0){
-            let toAdd = sqlObjDefinition.substring(sqlObjDefinition.indexOf(' ', start + 1) + 1, sqlObjDefinition.indexOf(' ', start + 6));
-            toAdd = toAdd.substring(0, toAdd.indexOf('.'));
+            const toAdd = sqlObjDefinition.substring(sqlObjDefinition.indexOf(' ', start + 1) + 1, sqlObjDefinition.indexOf(' ', start + 6));
             dependecys.add(toAdd);
         }
 
         start = 0;
         while((start = sqlObjDefinition.toUpperCase().indexOf(' JOIN ', start + 1)) > 0){
-            let toAdd = sqlObjDefinition.substring(sqlObjDefinition.indexOf(' ', start + 1) + 1, sqlObjDefinition.indexOf(' ', start + 6));
-            toAdd = toAdd.substring(0, toAdd.indexOf('.'));
-            dependecys.add(toAdd);
+            const toAdd = sqlObjDefinition.substring(sqlObjDefinition.indexOf(' ', start + 1) + 1, sqlObjDefinition.indexOf(' ', start + 6));
+            dependecys.add(toAdd.trim());
         }
         return Array.from(dependecys);
     }
@@ -45,23 +42,21 @@ export class Dependecy {
         const dependecys:Set<string> = new Set();
         let start = 0;
         while((start = sqlObjDefinition.toUpperCase().indexOf(' EXECUTE ', start + 1)) > 0){
-            let toAdd = sqlObjDefinition.substring(sqlObjDefinition.indexOf(' ', start + 1) + 1, sqlObjDefinition.indexOf(' ', start + 9));
-            toAdd = toAdd.substring(0, toAdd.indexOf('.'));
-            dependecys.add(toAdd);
+            const toAdd = sqlObjDefinition.substring(sqlObjDefinition.indexOf(' ', start + 1) + 1, sqlObjDefinition.indexOf(' ', start + 9)).replace('dbo.', '');
+            dependecys.add(toAdd.trim());
         }
         
         start = 0;
         while((start = sqlObjDefinition.toUpperCase().indexOf(' EXEC ', start + 1)) > 0){
-            let toAdd = sqlObjDefinition.substring(sqlObjDefinition.indexOf(' ', start + 1) + 1, sqlObjDefinition.indexOf(' ', start + 9));
-            toAdd = toAdd.substring(0, toAdd.indexOf('.'));
-            dependecys.add(toAdd);
+            const toAdd = sqlObjDefinition.substring(sqlObjDefinition.indexOf(' ', start + 1) + 1, sqlObjDefinition.indexOf(' ', start + 9)).replace('dbo.', '');
+            dependecys.add(toAdd.trim());
         }
 
         start = 0;
         while((start = sqlObjDefinition.search(/[dbo.][\w]{0, 100}[(]/)) > 0){
             sqlObjDefinition = sqlObjDefinition.substring(start);
             const end = sqlObjDefinition.indexOf('(', start);
-            dependecys.add(sqlObjDefinition.substring(sqlObjDefinition.indexOf('.', start) + 1, end));
+            dependecys.add(sqlObjDefinition.substring(0, end).replace('dbo.', '').trim());
             sqlObjDefinition = sqlObjDefinition.substring(end + 1);
         }
         return Array.from(dependecys);
@@ -89,8 +84,7 @@ export class Dependecy {
     private static async isValidDependecy(ObjectDetectedDependecy: string, sqlObject: ISqlObject, sqlObjects: ISqlObject[]){
         const index = sqlObjects.findIndex(obj => obj.name == ObjectDetectedDependecy);
         if(index < 0) return;
-        sqlObject.dependecies?.push(sqlObjects[index]);
-        if(sqlObjects[index].usages == undefined) sqlObject.dependecies = []; // is passed by value or ref?
-        sqlObjects[index].usages?.push(sqlObject); // is passed by value or ref?
+        sqlObject.pushDependecy(sqlObjects[index]); // is passed by value or ref?
+        sqlObjects[index].pushUsage(sqlObject); // is passed by value or ref?
     }
 }

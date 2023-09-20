@@ -1,8 +1,7 @@
-import { stringify } from 'querystring';
 import { FsManager } from 'src/core/fsmanager/fsmanager';
 import { SqlObjectBuilder } from 'src/services/sqlObject';
 import { Dependecy } from 'src/services/sqlObject/core';
-import { ISqlObject } from 'src/services/sqlObject/sqlObject';
+import { ISqlObject} from 'src/services/sqlObject/sqlObject';
 
 
 describe('dependecy from sqlObjects', ()=>{
@@ -34,8 +33,12 @@ describe('dependecy from sqlObjects', ()=>{
     });
     
     test('Should values dependecys and usages',async () =>{
-        const returned = Dependecy.fromObjects(sqlObjects);
 
+
+        await Dependecy.fromObjects(sqlObjects);
+        expect((sqlObjects[0].dependecies?.pop() as ISqlObject).name).toEqual(sqlObjects[1].name);
+
+        expect((sqlObjects[1].usages?.pop() as ISqlObject).name).toEqual(sqlObjects[0].name);
     });
 
 

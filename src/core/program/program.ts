@@ -7,6 +7,7 @@ import fs from 'fs';
 import { InvalidPathError } from '../../services/guardClauses/errors';
 import { ISqlObject } from '../../services/sqlObject/sqlObject';
 import SqlObjectBuilder from '../../services/sqlObject/builder';
+import { Dependecy } from 'src/services/sqlObject/core';
 
 
 export interface IProgram {
@@ -112,7 +113,10 @@ export class Program implements IProgram {
 
         const objects = await this.createSqlObjects(sourcePaths.directory); //, destination + '/docs/');
 
+        await Dependecy.fromObjects(objects);
 
         // TODO: wirite .md doc files and directories
+
+        
     }
 }

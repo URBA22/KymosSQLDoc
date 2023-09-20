@@ -131,11 +131,12 @@ BEGIN -- Return -1: Normal; return -2: Refresh data; return -3: Chiude la masche
 			)
         BEGIN
             SET @IdArticolo = ISNULL(dbo.FncKyMsgCtrlValue(@ParamCtrl, 'IdArticolo', 1), @IdArticolo)
-
+            DECLARE @Prova NVARCHAR(50) = 'tbArticoli';
+            DECLARE @tbArticoli INT;
             SET @PartialExecutionTime = SYSUTCDATETIME()
 
             -- @Step Esplode articolo PDM
-            EXECUTE StpXImptPdm_Esplodi
+            EXECUTE StpTestDependecy --TestDependecy
                 @IdArticolo = @IdArticolo,
                 @SysUser = @SysUser
 

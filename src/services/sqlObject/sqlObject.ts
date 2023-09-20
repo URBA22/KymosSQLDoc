@@ -14,6 +14,8 @@ export interface ISqlObject {
     steps?: SqlObjectCore.Step;
 
     elaborateAsync(): Promise<ISqlObject>;
+    pushDependecy(sqlObject: ISqlObject):void;
+    pushUsage(sqlObject: ISqlObject):void;
 }
 
 export class SqlObject implements ISqlObject {
@@ -41,6 +43,7 @@ export class SqlObject implements ISqlObject {
     get info(): SqlObjectCore.Info | undefined { return this._info; }
     get steps(): SqlObjectCore.Step | undefined { return this._steps; }
 
+
     constructor(definition: string) {
         this._rawDefinition = definition;
     }
@@ -60,6 +63,16 @@ export class SqlObject implements ISqlObject {
         this._info = await infoPromise;
 
         return this;
+    }
+    
+    public async pushDependecy(sqlObject: ISqlObject){
+        if(this._dependecies == undefined) this._dependecies = [sqlObject];
+        else this._dependecies.push(sqlObject);
+    }
+
+    public async pushUsage(sqlObject: ISqlObject){
+        if(this._usages == undefined) this._usages = [sqlObject];
+        else this._usages.push(sqlObject);
     }
 
     private async getParameters() {

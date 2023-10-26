@@ -19,7 +19,7 @@ export class Parameter {
      */
     public static async fromDefinition(definition: string) {
         //get block of header param
-        let definitionHeader = definition.substring(definition.search(/\[[\w]{0,100}\][.]\[[\w]{0,100}\]/), definition.search('AS')).replace(/\[[\w]{0,100}\][.]\[[\w]{0,100}\]/, '').trim();
+        let definitionHeader = definition.substring(definition.search(/\[[\w]{0,100}\][.]\[[\w]{0,100}\]/), definition.toUpperCase().search('AS')).replace(/\[[\w]{0,100}\][.]\[[\w]{0,100}\]/, '').trim();
         if(definitionHeader[0] == '(') definitionHeader = definitionHeader.substring(1, definitionHeader.length - 1).trim();
         if(definitionHeader == '') return;
         definitionHeader += ', @';
@@ -40,9 +40,9 @@ export class Parameter {
     private static async getParameter(parameterStr: string) {
         const parameter: Parameter = {
             name: await Parameter.getName(parameterStr),
-            type: await Parameter.getType(parameterStr),
-            nullable: (parameterStr.indexOf(' NULL') > 0 && parameterStr.indexOf('NOT NULL') < 0),
-            output: (parameterStr.indexOf(' OUT') > 0 || parameterStr.indexOf(' OUTPUT') > 0),
+            type: await Parameter.getType(parameterStr.toUpperCase()),
+            nullable: (parameterStr.toUpperCase().indexOf(' NULL') > 0 && parameterStr.toUpperCase().indexOf('NOT NULL') < 0),
+            output: (parameterStr.toUpperCase().indexOf(' OUT') > 0 || parameterStr.toUpperCase().indexOf(' OUTPUT') > 0),
             default: await Parameter?.getDefault(parameterStr)
         };
         return parameter;
@@ -67,7 +67,7 @@ export class Parameter {
     private static async getDefault(parameterStr: string) {
         const start = parameterStr.indexOf('='); 
         if (start < 0) return; //there isn't equal, so no default;
-        const toTrimDefault = parameterStr.substring(start + 1).replace(' OUTPUT', '').replace(' OUT', '').replace(' NULL', '').replace(',', '').trim();
+        const toTrimDefault = parameterStr.toUpperCase().substring(start + 1).replace(' OUTPUT', '').replace(' OUT', '').replace(' NULL', '').replace(',', '').trim();
         if(toTrimDefault == '') return;
         return toTrimDefault;
     }

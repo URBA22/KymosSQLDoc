@@ -37,13 +37,13 @@ export class Info {
         return info;
     }
 
-    private static async getDescriptionFromToken(comments: string, token: string) {
+    private static async getDescriptionFromToken(comments: string, token: string, start = -1) {
         const lowerComments = comments.toLowerCase();
         if (!lowerComments.includes(token)) {
             return;
         }
 
-        const start = lowerComments.indexOf(token) + token.length + 1;
+        start = lowerComments.indexOf(token, start) + token.length + 1;
         const end = lowerComments.indexOf('\n', start + 1);
         return {
             start,
@@ -61,14 +61,13 @@ export class Info {
         const versions: Version[] = [];
 
         while (comments.toLowerCase().indexOf(Tokens.VERSION, start) >= 0) {
-            const res = await this.getDescriptionFromToken(comments, Tokens.VERSION);
+            const res = await this.getDescriptionFromToken(comments, Tokens.VERSION, start);
 
             start = res?.start ?? comments.length;
             description = res?.description ?? '';
 
             await Info.addVersion(description, versions);
-
-            start = comments.toLowerCase().indexOf(Tokens.VERSION, start) + Tokens.VERSION.length;
+            start += Tokens.VERSION.length;
         }
 
         return versions;

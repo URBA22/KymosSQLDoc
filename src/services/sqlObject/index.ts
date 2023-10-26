@@ -1,5 +1,5 @@
 import SqlObjectBuilder from './builder';
-import { SqlObject } from './sqlObject';
+import { ISqlObject } from './sqlObject';
 
 
-export { SqlObjectBuilder, SqlObject };
+export { SqlObjectBuilder, ISqlObject };

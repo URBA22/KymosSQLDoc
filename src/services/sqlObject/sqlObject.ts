@@ -94,20 +94,21 @@ export class SqlObject implements ISqlObject {
 
         const indexAlter = this._definition
             .toUpperCase()
-            .indexOf('ALTER');
+            .indexOf('ALTER ');
 
         const indexCreate = this._definition
             .toUpperCase()
-            .indexOf('CREATE');
+            .indexOf('CREATE ');
 
         if (indexAlter < 0 && indexCreate < 0) {
             return;
         }
 
-        let start = indexCreate + 'CREATE'.length;
-        if (indexAlter >= 0) {
-            start = indexAlter + 'ALTER'.length;
-        }
+        //take always the maximum
+        let start = (indexCreate > indexAlter) ? indexCreate + 'CREATE'.length : indexAlter + 'ALTER'.length ;
+        if(indexAlter >= 0 && indexCreate >= 0 ) // take the minimumm
+            start = (indexCreate < indexAlter) ? indexCreate + 'CREATE'.length : indexAlter + 'ALTER'.length ;
+
         const precStart = start;
         start = this._definition.indexOf(' ', start + 2);
 

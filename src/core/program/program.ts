@@ -5,9 +5,12 @@ import { Root } from '../fsmanager/core/Root';
 import { Directory } from '../fsmanager/core/Directory';
 import fs from 'fs';
 import { InvalidPathError } from '../../services/guardClauses/errors';
-import { ISqlObject } from '../../services/sqlObject/sqlObject';
+import { ISqlObject, SqlObject } from '../../services/sqlObject/sqlObject';
 import SqlObjectBuilder from '../../services/sqlObject/builder';
 import { Dependecy } from 'src/services/sqlObject/core';
+import { IStoredSqlObject, StoredSqlObjectBuilder } from 'src/services/storedSqlObject';
+import { DocsCreatorBuilder } from 'src/services/docsCreator';
+import { Mode } from 'src/services/docsCreator/builder';
 
 
 export interface IProgram {
@@ -23,41 +26,46 @@ export class Program implements IProgram {
         this.fsManager = fsManager;
     }
 
-    private async createSqlObjects(dir: Directory) {
-        const objectsOperations: Promise<ISqlObject>[] = [];
-        const readFileOperations: Promise<string>[] = [];
-        const createDocsOperations: Promise<ISqlObject[]>[] = [];
+    private async createStoredSqlObjects(dir: Directory) {
+        const storedObjectsOperations = [];
+        const readFileOperations: string[] = [];
+        const createDocsOperations: IStoredSqlObject[][] = [];
+
 
         for (const subDir of dir.children) {
-            createDocsOperations.push(this.createSqlObjects(subDir));
+            createDocsOperations.push(await this.createStoredSqlObjects(subDir));
         }
 
         for (const file of dir.files.filter(file => file.substring(file.indexOf('.')) == '.sql')) {
-            readFileOperations.push(this.fsManager.readFileAsync(dir.directory, file));
+            readFileOperations.push(await this.fsManager.readFileAsync(dir.directory, file));
         }
 
-        for (const readFileOperation of await Promise.allSettled(readFileOperations)) {
-            const content = readFileOperation.status === 'fulfilled' ? readFileOperation.value : '';
-            objectsOperations.push(SqlObjectBuilder.createSqlObject()
+        for (const readFileOperation of readFileOperations) {
+            const content = readFileOperation;
+            const sqlObject = SqlObjectBuilder.createSqlObject()
                 .fromDefinition(content)
                 .build()
-                .elaborateAsync());
+                .elaborateAsync();
+
+            try{
+                const storedSqlObject = StoredSqlObjectBuilder.createStoredSqlObject()
+                    .fromDirectory(dir)
+                    .withSqlObject(await sqlObject)
+                    .build();
+                storedObjectsOperations.push(storedSqlObject);
+            }catch(error){
+                console.log(error);
+            }
+
         }
 
-        let objects: ISqlObject[] = (await Promise.allSettled(objectsOperations))
+        let objects: IStoredSqlObject[] = storedObjectsOperations
             .map(objectOperation => {
-                if (objectOperation.status === 'fulfilled')
-                    return objectOperation.value;
+                return objectOperation;
             })
-            .filter(object => object !== undefined) as ISqlObject[];
+            .filter(object => object !== undefined) as IStoredSqlObject[];
         
-        const objectsSubFolders = (await Promise.allSettled(createDocsOperations))
-            .map(objectOperation => {
-                if (objectOperation.status === 'fulfilled')
-                    return objectOperation.value;
-            })
-            .filter(object => object !== undefined && object.length == 0) as ISqlObject[][];
-        
+        const objectsSubFolders = createDocsOperations;
         objects = objects.concat(...objectsSubFolders); 
         
         return objects;
@@ -111,12 +119,25 @@ export class Program implements IProgram {
         if (!fs.existsSync(await FsManager.mergePath(destination, 'docs/')))
             await this.fsManager.writeDirectoryAsync(destination, 'docs');
 
-        const objects = await this.createSqlObjects(sourcePaths.directory); //, destination + '/docs/');
+        const storedSqlObjects = await this.createStoredSqlObjects(sourcePaths.directory); //, destination + '/docs/');
+        
+        //Dependecies
+        const sqlObjects: ISqlObject[] = [];
+        storedSqlObjects.forEach(storedSqlObject =>{
+            sqlObjects.push(storedSqlObject.sqlObject);
+        });
+        await Dependecy.fromObjects(sqlObjects);
 
-        await Dependecy.fromObjects(objects);
+        const dest = new Directory(destination, 'docs');
 
         // TODO: wirite .md doc files and directories
-
+        DocsCreatorBuilder
+            .createDocsCreator()
+            .withDestination(dest)
+            .withStoredSqlObjects(storedSqlObjects)
+            .withMode(Mode.md)
+            .build()
+            .executeAsync();
         
     }
 }

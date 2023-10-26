@@ -11,7 +11,7 @@ const command = CommandBuilder
     .withDescription('Autmatic SQL Server documentation generator.\nPowered by Kymos Srl Sb.')
     .withOption('-s, --source <value>', 'From specific source directory/file')
     .withOption('-o, --out <value>', 'Write documentation to a specific file/drectory')
-    // .withOption('-f, --format <value>', 'Chose between html and md, or both. Default is md')
+    .withOption('-f, --format <value>', 'Chose between html and md, or both. Default is md')
     .build();
 
 const fsManager = FsManagerBuilder

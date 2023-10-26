@@ -32,17 +32,15 @@ describe('Utilities ExecuteAsync', () => {
     });
 
 
-    test('Should work fine', async () => {
+    test('Should create docs from command', async () => {
         await program.executeAsync([
             '/usr/local/bin/node',
             './src/index.js',
             '-s',
-            './tests/mockup/examples',
+            './tests/mockup/dbo',
             '-o',
-            './tests/examplesDocumentation'
-        ]).catch((error: Error) => {
-            console.log(error.message);
-        });
+            './tests/mockup/md'
+        ]);
 
         // TODO: Add test when executeAsync is finished
         // const res = await fsManager.readFileAsync('./tests/examplesDocumentation/docs/examples', 'StpXImptPdm_Articolo.md');

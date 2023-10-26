@@ -10,7 +10,7 @@ describe('dependecy from sqlObjects', ()=>{
     const sqlObjects: ISqlObject[] = []; 
     beforeAll(async ()=>{
         const fsmanager = new FsManager();
-        let rawDefinition = await fsmanager.readFileAsync('./tests/mockup/examples/', 'StpXImptPdm_Articolo.sql');
+        let rawDefinition = await fsmanager.readFileAsync('./tests/mockup/dbo/StoredProcedures/', 'StpZone_KyDel.sql');
 
         sqlObjects.push( 
             await SqlObjectBuilder
@@ -20,7 +20,7 @@ describe('dependecy from sqlObjects', ()=>{
                 .elaborateAsync()
         );
 
-        rawDefinition = await fsmanager.readFileAsync('./tests/mockup/examples/', 'StpXImptPdm_ArticoloBadNest.sql');
+        rawDefinition = await fsmanager.readFileAsync('./tests/mockup/dbo/StoredProcedures/', 'StpUteMsg.sql');
 
         sqlObjects.push( 
             await SqlObjectBuilder

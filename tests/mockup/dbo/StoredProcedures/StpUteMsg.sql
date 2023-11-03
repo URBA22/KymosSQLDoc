@@ -1,27 +1,27 @@
 -- ==========================================================================================
 -- Entity Name:   StpUteMsg
--- Author:        Dav
+-- @author:        Dav
 -- Create date:   11/08/12
--- Custom_Dbo:	  NO
--- Standard_dbo:  YES
+-- @custom:	  NO
+-- @standard:  YES
 -- CustomNote: Write custom note here
--- Description:	Inserisce messaggi utente asincroni
+-- @summary:	Inserisce messaggi utente asincroni
 -- @CodFnzTipoMsg puo valere
 --		ALR allarme
 --		INF information
 --		WRN warning
 --		LOG non visualizzato
 -- History:
--- dav 23.11.14 se <>INF mostra indipdendentemente dallo stato
--- dav 17.02.16 @ERROR_MESSAGE() in dummy per evitare troncamenti a 4000 
--- dav 17.08.16 Aggiunta spid, iddoc e idrow
--- dav 12.08.16 Disattivazione traduzioni (traduce anche i parametri in molte chiamate)
--- dav 22.05.18 abilitaizone messaggi di WRN
--- dav 210329 Gestione UteMsgWrnDisable
--- dav 211202 Aggiunto @ExecutionTime
--- dav 220226 Gestione isnull(@Stato,0) <> - 3 per comandi lunghi
--- dav 221112 @KYInfoEst as nvarchar(max) = NULL
--- dav 221227 Rinomina @SysUserUpdate -> @SysUser , @Stato -> KyStato
+-- @version dav 141123 se <>INF mostra indipdendentemente dallo stato
+-- @version dav 160217 @ERROR_MESSAGE() in dummy per evitare troncamenti a 4000 
+-- @version dav 160817 Aggiunta spid, iddoc e idrow
+-- @version dav 160812 Disattivazione traduzioni (traduce anche i parametri in molte chiamate)
+-- @version dav 180522 abilitaizone messaggi di WRN
+-- @version dav 210329 Gestione UteMsgWrnDisable
+-- @version dav 211202 Aggiunto @ExecutionTime
+-- @version dav 220226 Gestione isnull(@Stato,0) <> - 3 per comandi lunghi
+-- @version dav 221112 @KYInfoEst as nvarchar(max) = NULL
+-- @version marco 221227 Rinomina @SysUserUpdate -> @SysUser , @Stato -> KyStato
 -- ==========================================================================================
 CREATE Procedure [dbo].[StpUteMsg] 
 	(

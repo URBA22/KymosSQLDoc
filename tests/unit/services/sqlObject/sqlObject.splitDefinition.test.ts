@@ -17,7 +17,11 @@ describe('SqlObject SplitDefinition', () => {
            ciaociao
            END
         `;
-        const expectedDefinition = 'CREATE PROCEDURE [dbo].[StpProva] AS BEGIN aaa bbb cccc ddd eee fff';
+        const expectedDefinition = `CREATE PROCEDURE [dbo].[StpProva]
+ AS BEGIN 
+ aaa
+ bbb cccc 
+ ddd eee fff`;
         const expectedComments = `/*   commento 1
                 -- multilinea
             */

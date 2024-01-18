@@ -20,22 +20,6 @@ STORED_PROCEDURE
 ## Parameter
 | name&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;  | type&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;  | nullable&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;  | output&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;  |
 | ------ | ------ | ------ | ------ |
-| Msg  | AS NVARCHAR(300)  | false  | false  |
-| Msg1  | AS NVARCHAR(300)  | false  | false  |
-| MsgObj  | AS NVARCHAR(300)  | false  | false  |
-| Param  | AS NVARCHAR(300)  | false  | false  |
-| CodFnzTipoMsg  | AS NVARCHAR(5)  | false  | false  |
-| SysUser  | AS NVARCHAR(256)  | false  | false  |
-| KYStato  | AS INT  | false  | false  |
-| KYRes  | AS INT  | false  | false  |
-| KYInfoEst  | AS NVARCHAR(MAX)  | true  | false  |
-| KyParam  | AS NVARCHAR(MAX  | false  | false  |
-| KyMsg  | AS NVARCHAR(MAX)  | false  | true  |
-| TipoDoc  | AS NVARCHAR(256)  | true  | false  |
-| IdDoc  | AS NVARCHAR(50)  | true  | false  |
-| IdDocDet  | AS NVARCHAR(100  | true  | false  |
-| MsgLog  | AS NVARCHAR(MAX)  | true  | false  |
-| ExecutionTime  | INT  | true  | false  |
 ## Dependecies 
 | schema&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;  | name&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;  | type&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;  | description&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;  |
 | ------ | ------ | ------ | ------ |

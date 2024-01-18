@@ -53,7 +53,7 @@ describe('SqlObject Parameter fromDefinition ', () => {
                 description: undefined
             }];
 
-        expect(sqlObject.name).toEqual('StpMntObjLog');
+        expect(sqlObject.name).toEqual('StpUteMsg');
         let i = 0;
         parameters.forEach(param => {
             expect(param).toEqual(expectedResult[i++]);

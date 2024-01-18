@@ -9,21 +9,20 @@ import { StoredSqlObjectBuilder } from 'src/services/storedSqlObject';
 
 describe('create docs md', ()=>{
 
-    const expettedDocs = `# StpZone_KyDel
-sqlObject.desc
-
-# Info 
-@Summary undefined
-@Author undefined
-@Custom undefined
-@Standard undefined
-# Versions 
-# Dependecies 
+    const expettedDocs = `# dbo - StpZone_KyDel
+STORED_PROCEDURE
+## Info 
+@Summary **undefined**  
+@Author **undefined**  
+@Custom **undefined**  
+@Standard **undefined**  
+## Versions 
+## Dependecies
 
 | schema      | name      | type       | desc          |
 | ------ | -------- | -------- | ------ |
 | dbo | StpUteMsg | 2 | (dependecy as ISqlObject).desc |
-# Usages 
+# Usages
 
 | schema      | name      | type       | desc          |
 | ------ | -------- | -------- | ------ |

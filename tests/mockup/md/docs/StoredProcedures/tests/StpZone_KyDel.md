@@ -10,12 +10,6 @@ STORED_PROCEDURE
 ## Parameter
 | name&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;  | type&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;  | nullable&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;  | output&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;  |
 | ------ | ------ | ------ | ------ |
-| IdZona  | NVARCHAR(20)  | false  | false  |
-| SysRowVersion  | TIMESTAMP  | false  | false  |
-| SysUserUpdate  | NVARCHAR(256)  | false  | false  |
-| KYStato  | INT  | true  | true  |
-| KYMsg  | NVARCHAR(MAX)  | true  | true  |
-| KYRes  | INT  | true  | false  |
 ## Dependecies 
 | schema&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;  | name&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;  | type&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;  | description&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;  |
 | ------ | ------ | ------ | ------ |

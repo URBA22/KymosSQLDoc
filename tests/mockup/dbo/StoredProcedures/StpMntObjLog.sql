@@ -43,7 +43,7 @@ BEGIN
 	Set @PrInfo  = ''
 	
 	/****************************************************************
-	* Stato 0
+	--@State 0
 	****************************************************************/
 	IF ISNULL(@KYStato,999) = 0
 	BEGIN
@@ -67,14 +67,14 @@ BEGIN
 	END
 	
 	/****************************************************************
-	* Stato 1 - risposta affermativa
+	--@State 1 @Res 2 - risposta affermativa
 	****************************************************************/
 	IF (@KYStato = 1 and @KYRes = 2)
 	BEGIN
 
 			Set @Version = CONVERT(nvarchar(50), GETDATE(), 120) 
 	
-			-- inserisce tutti gli oggetti
+			--@ inserisce tutti gli oggetti
 			INSERT INTO TbMntObjLog
 			(IdObj, Definition, Version, NoteLog, SysUserCreate, SysDateCreate, SysDateUpdate)
 			SELECT  sys.objects.name as IdObj, Null as  Definition, @Version, '' AS NoteLog, @SysUser AS SysUserCreate, sys.objects.create_date,  sys.objects.modify_date
@@ -119,7 +119,7 @@ BEGIN
 	END
 
 	/****************************************************************
-	* Stato 1 - risposta verifica
+	--@State 1 @Res 1 - risposta verifica
 	****************************************************************/
 	IF (@KYStato = 1 and @KYRes = 1)
 	BEGIN
@@ -234,7 +234,7 @@ BEGIN
 	
 	
 	/****************************************************************
-	* Stato 1 - risposta negativa
+	--@State 999 @Res 0 - risposta negativa
 	****************************************************************/
 	IF ISNULL(@KYStato,999) = 1 and @KYRes = 0
 	BEGIN

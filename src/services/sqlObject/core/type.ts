@@ -1,8 +1,8 @@
 
 export enum Type {
-    VIEW,
-    TABLE,
-    STORED_PROCEDURE,
-    FUNCTION,
-    TRIGGER
+    VIEW = 'VIEW',
+    TABLE = 'TABLE',
+    STORED_PROCEDURE = 'STORED_PROCEDURE',
+    FUNCTION = 'FUNCTION',
+    TRIGGER = 'TRIGGER'
 }

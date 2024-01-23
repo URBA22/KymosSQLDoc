@@ -4,6 +4,7 @@ import { Mode } from './builder';
 import { ISqlObject } from '../sqlObject';
 import { IDirectory } from 'src/core/fsmanager/core/Directory';
 import { FsManager } from 'src/core/fsmanager/fsmanager';
+import { Dependecy } from '../sqlObject/core';
 
 export interface IDocsCreator {
     executeAsync(): Promise<void>;
@@ -49,45 +50,99 @@ export class DocsCreator implements IDocsCreator{
         }
     }
 
+    private verbatimDocsMd(str: string | undefined){
+        if(str == undefined) return '';
+        return '````{verbatim, lang = "markdown"}\n' + str + '\n````';
+    }
+
+    private spaceDocs( length: number, str: string|undefined = undefined, space = '&ensp;',){
+        if(str == undefined) str = '';
+        const toAdd  = length - str.length;
+        for(let i = 0; i < toAdd; i++) str += space;
+        return str;
+    }
+
+    private tableDocsMd(header: string[], content:(string|undefined)[][], minWidth = 0){
+        let table = '|';
+        header.forEach(columnHeader => {
+            table += (' ' + this.spaceDocs(minWidth, columnHeader) + '  |');
+        });
+
+        table += '\n|';
+        header.forEach(p => {
+            table += (' ------ |');
+        });
+
+        content.forEach(row => {
+            table += '\n|';
+            row.forEach(column => {
+                table += (' ' + column + '  |');
+            });
+        });
+        table += '\n';
+        return table;
+    }
+
     private async createDocsMd(sqlObject: ISqlObject){
         let docs = '';
 
         // nome procedura
-        docs += ('# ' + sqlObject.name + '\n');
-        docs += ('' + 'sqlObject.desc' + '\n\n');
+        {
+            docs += ('# ' + (sqlObject.schema) + ' - ' + (sqlObject.name) + '\n');
+            docs += ('' + (sqlObject.type?.toString()) + '\n');
+        }
 
         //Info
-        docs += ('# Info \n');
-        docs += ('@Summary ' + sqlObject.info?.summary + '\n');
-        docs += ('@Author ' + sqlObject.info?.author + '\n');
-        docs += ('@Custom ' + sqlObject.info?.custom + '\n');
-        docs += ('@Standard ' + sqlObject.info?.standard + '\n');
+        {
+            docs += ('## Info \n');
+            docs += ('@Summary **' + (sqlObject.info?.summary) + '**  \n');
+            docs += ('@Author **' + (sqlObject.info?.author) + '**  \n');
+            docs += ('@Custom **' + (sqlObject.info?.custom) + '**  \n');
+            docs += ('@Standard **' + (sqlObject.info?.standard) + '**  \n');
+        }
 
         //Version
-        docs += ('# Versions \n');
-        sqlObject.info?.versions?.forEach(version =>{
-            docs += ('' + version.version + ' | ' + version.author + ' | ' + version.description + '\n');
-        });
+        {
+            docs += ('## Versions \n');
+            docs += ('`version `' + this.spaceDocs(2, undefined) + this.spaceDocs(10, '_author_') + this.spaceDocs(2, undefined) + this.spaceDocs(10, '_desc_') + '  \n');
+            sqlObject.info?.versions?.forEach(version =>{
+                docs += ('`' + version.version + '. `' + this.spaceDocs(2, undefined) + this.spaceDocs(10, version.author) + this.spaceDocs(2, undefined) + this.spaceDocs(10, version.description) + '  \n');
+            });
+        }
+
+        //Parameters
+        {
+            docs += ('## Parameter\n');
+            const paramHeader = ['name', 'type', 'nullable', 'output'];
+            const paramRow:(string|undefined)[][] = [];
+            sqlObject.parameters?.forEach(parameter =>{
+                paramRow.push([parameter.name, parameter.type, parameter.nullable.toString(), parameter.output.toString()]);
+            });
+            docs += this.tableDocsMd(paramHeader, paramRow, 20);
+        }
 
         //Dependecy
-        docs += ('# Dependecies \n');
-        docs += ('\n| ' + 'schema' + '      | ' + 'name' + '      | ' + 'type' + '       | ' + 'desc' + '          |'+'\n'+'| ------ | -------- | -------- | ------ |\n');
-        sqlObject.dependecies?.forEach(dependecy =>{
-            docs += ('| ' + (dependecy as ISqlObject).schema + ' | ' + (dependecy as ISqlObject).name + ' | ' + (dependecy as ISqlObject).type + ' | ' + '(dependecy as ISqlObject).desc' + ' |\n');
-        });
+        {
+            docs += ('## Dependecies \n');
+            const depenHeader = ['schema', 'name', 'type', 'description'];
+            const depenRow:(string|undefined)[][] = [];
+            sqlObject.dependecies?.forEach(dependecy =>{
+                depenRow.push([(dependecy as ISqlObject).schema, '['+(dependecy as ISqlObject).name+'](./'+(dependecy as ISqlObject).name+'.md)', (dependecy as ISqlObject).type?.toString(), (dependecy as ISqlObject).info?.summary]);
+            });
+            docs += this.tableDocsMd(depenHeader, depenRow, 20);
+        }
 
         //Usage
-        docs += ('# Usages \n');
-        docs += ('\n| ' + 'schema' + '      | ' + 'name' + '      | ' + 'type' + '       | ' + 'desc' + '          |'+'\n'+'| ------ | -------- | -------- | ------ |\n');
-        sqlObject.usages?.forEach(usage =>{
-            docs += ('| ' + (usage as ISqlObject).schema + ' | ' + (usage as ISqlObject).name + ' | ' + (usage as ISqlObject).type + ' | ' + '(usage as ISqlObject).desc' + ' |' + '\n');
-        });
+        {
+            docs += ('## Usages \n');
+            const usageHeader = ['schema', 'name', 'type', 'description'];
+            const usageRow:(string|undefined)[][] = [];
+            sqlObject.usages?.forEach(usage =>{
+                usageRow.push([(usage as ISqlObject).schema, '['+(usage as ISqlObject).name+'](./'+(usage as ISqlObject).name+'.md)', (usage as ISqlObject).type?.toString(), (usage as ISqlObject).info?.summary]);
+            });
+            docs += this.tableDocsMd(usageHeader, usageRow, 20);
+        }
 
-        docs += ('# Parameter\n');
-        docs += ('\n| ' + 'name' + '      | ' + 'type' + '      | ' + 'nullable' + '      | ' + 'output' + '       | ' + 'desc' + '          |'+'\n'+'| ------ | -------- | -------- | -------- | ------ |\n');
-        sqlObject.parameters?.forEach(parameter =>{
-            docs += ('| ' + parameter.name + ' | '   + parameter.type + ' | '  + parameter.nullable + ' | '  + parameter.output + ' | '  + parameter.description + ' |\n');
-        });
 
         return docs;
     }

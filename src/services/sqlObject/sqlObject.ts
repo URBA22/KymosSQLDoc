@@ -58,9 +58,11 @@ export class SqlObject implements ISqlObject {
 
         const parametersPromise = this.getParameters();
         const infoPromise = SqlObjectCore.Info.fromComments(this._comments ?? '');
+        const stepPromise = SqlObjectCore.Step.stepFromComments(this._comments ?? '');
 
         this._parameters = await parametersPromise;
         this._info = await infoPromise;
+        this._steps = await stepPromise;
 
         return this;
     }
@@ -176,8 +178,9 @@ export class SqlObject implements ISqlObject {
         }
 
         this._definition = this._definition
-            .replace(/(\t|\n|\r)+/g, ' ')
+            .replace(/(\t|\r)+/g, ' ') 
             .replace(/[ ]+/g, ' ')
+            .replace('\n\n', '\n')
             .trim();
 
         this._comments = this._comments?.trim();

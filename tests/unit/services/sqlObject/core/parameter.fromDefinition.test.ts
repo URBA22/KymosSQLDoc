@@ -10,7 +10,7 @@ describe('SqlObject Parameter fromDefinition ', () => {
 
     beforeAll(async () => {
         const fsmanager = new FsManager();
-        const rawDefinition = await fsmanager.readFileAsync('./tests/mockup/dbo/StoredProcedures/', 'StpMntObjLog.sql');
+        const rawDefinition = await fsmanager.readFileAsync('./tests/mockup/dbo/StoredProcedures/', 'StpUteMsg.sql');
 
         sqlObject = await SqlObjectBuilder
             .createSqlObject()

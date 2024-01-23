@@ -14,7 +14,7 @@
     "lint": "eslint . --ext .ts",
     "lint-and-fix": "eslint . --ext .ts --fix",
     "test": "jest",
-    "single-test": "npm test -- -t \"Should create docs from command\" --detectOpenHandles"
+    "single-test": "npm test -- -t \"Should fromDefinition parse store procedure and functions parameters from definition\" --detectOpenHandles"
   },
   "repository": {
     "type": "git",

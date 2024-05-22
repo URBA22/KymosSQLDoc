@@ -19,7 +19,7 @@ export class Parameter {
      */
     public static async fromDefinition(definition: string) {
         //get block of header param
-        let definitionHeader = definition.substring(definition.search(/\[[\w]{0,100}\][.]\[[\w]{0,100}\]/), definition.toUpperCase().search('AS')).replace(/\[[\w]{0,100}\][.]\[[\w]{0,100}\]/, '').trim();
+        let definitionHeader = definition.substring(definition.search(/\[[\w]{0,100}\][.]\[[\w]{0,100}\]/), definition.toUpperCase().search('AS BEGIN')).replace(/\[[\w]{0,100}\][.]\[[\w]{0,100}\]/, '').trim();
         if(definitionHeader[0] == '(') definitionHeader = definitionHeader.substring(1, definitionHeader.length - 1).trim();
         if(definitionHeader == '') return;
         definitionHeader += ', @';

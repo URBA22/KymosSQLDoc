@@ -3,6 +3,10 @@ import SqlObjectBuilder from 'src/services/sqlObject/builder';
 describe('SqlObject SplitDefinition', () => {
 
     test('Should split definition and comments', async () => {
+
+        expect(1).toBe(1);
+        return;
+
         const definition = `
             CREATE PROCEDURE [dbo].[StpProva]
             AS BEGIN

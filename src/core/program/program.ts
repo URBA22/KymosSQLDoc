@@ -3,7 +3,6 @@ import { ICommand } from '../command';
 import { FsManager, IFsManager } from '../fsmanager/fsmanager';
 import { Root } from '../fsmanager/core/Root';
 import { Directory } from '../fsmanager/core/Directory';
-import fs from 'fs';
 import { InvalidPathError } from '../../services/guardClauses/errors';
 import { ISqlObject, SqlObject } from '../../services/sqlObject/sqlObject';
 import SqlObjectBuilder from '../../services/sqlObject/builder';
@@ -105,18 +104,18 @@ export class Program implements IProgram {
         const source = programOptions.source ?? './';
         const destination = programOptions.out ?? './';
 
-        // TODO: change fs with this.fsManager
-        if (!fs.existsSync(source) || !fs.lstatSync(source).isDirectory()) {
+        // *changed fs with this.fsManager
+        if (!this.fsManager.isPathValid(source)) {
             throw new InvalidPathError(source);
         }
-        if (!fs.existsSync(destination) && !fs.lstatSync(destination).isDirectory()) {
+        if (!this.fsManager.isPathValid(destination)) {
             throw new InvalidPathError(destination);
         }
 
         const sourcePaths: Root = await this.fsManager.readDirectoryAsync(source);
 
-        // TODO: change fs with this.fsManager
-        if (!fs.existsSync(await FsManager.mergePath(destination, 'docs/')))
+        // *changed fs with this.fsManager
+        if (!this.fsManager.isPathValid(await FsManager.mergePath(destination, 'docs/')))
             await this.fsManager.writeDirectoryAsync(destination, 'docs');
 
         const storedSqlObjects = await this.createStoredSqlObjects(sourcePaths.directory); //, destination + '/docs/');
@@ -139,5 +138,7 @@ export class Program implements IProgram {
             .build()
             .executeAsync();
         
+
+            
     }
 }

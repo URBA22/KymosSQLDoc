@@ -14,6 +14,7 @@ export interface IFsManager {
     readDirectoryAsync(path: string): Promise<IRoot>;
     writeDirectoryAsync(path: string, name: string): Promise<void>;
     isPath(path: string): Promise<boolean>;
+    isPathValid(path: string): Promise<boolean>;
 }
 
 
@@ -45,6 +46,15 @@ export class FsManager implements IFsManager {
         path = await FsManager.mergePath(this.absolutePath, path);
 
         //controlla se il percorso passato è una cartella
+        if (fs.existsSync(path) && fs.lstatSync(path).isDirectory()) {
+            return true;
+        }
+        return false;
+    }
+
+    public async isPathValid(path: string): Promise<boolean> {
+        
+        //controlla se il percorso passato è un filepath valido 
         if (fs.existsSync(path) && fs.lstatSync(path).isDirectory()) {
             return true;
         }
